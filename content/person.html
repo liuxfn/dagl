@@ -1,0 +1,578 @@
+
+<title>欢迎访问 - 人员档案管理系统</title>
+
+<link rel="stylesheet" href="components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css" />
+<link rel="stylesheet" href="components/_mod/jqgrid/ui.jqgrid.min.css" />
+<style>
+    .no-close .ui-dialog-titlebar-close{
+        display: none;
+    }
+</style>
+
+<!-- ajax layout which only needs content area -->
+<div class="page-header">
+    <h1>
+        人员档案管理
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            项目(部门)人员档案管理
+        </small>
+    </h1>
+</div><!-- /.page-header -->
+
+<div class="row">
+    <div class="col-xs-12">
+        <!-- PAGE CONTENT BEGINS -->
+        <!--自定义搜索 <div id="mysearch" class="well well-sm"></div>-->
+
+        <table id="grid-table"></table>
+
+        <div id="grid-pager"></div>
+
+        <!-- PAGE CONTENT ENDS -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+<!-- page specific plugin scripts -->
+<script type="text/javascript">
+    var scripts = [
+        "components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js",
+        "components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.zh-CN.min.js",
+        "components/jqGrid/js/jquery.jqGrid.v5.3.1.js",
+        "components/jqGrid/js/minified/i18n/grid.locale-cn.js",
+        null,
+        "components/jqGrid/js/addons/jszip.js"
+    ]
+    $('.page-content-area').ace_ajax('loadScripts', scripts, function() {
+        //inline scripts related to this page
+
+        jQuery(function($) {
+            var grid_selector = "#grid-table";
+            var pager_selector = "#grid-pager";
+
+
+            var parent_column = $(grid_selector).closest('[class*="col-"]');
+            //resize to fit page size
+            $(window).on('resize.jqGrid', function () {
+                $(grid_selector).jqGrid( 'setGridWidth', parent_column.width() );
+            })
+
+            //resize on sidebar collapse/expand
+            $(document).on('settings.ace.jqGrid' , function(ev, event_name, collapsed) {
+                if( event_name === 'sidebar_collapsed' || event_name === 'main_container_fixed' ) {
+                    //setTimeout is for webkit only to give time for DOM changes and then redraw!!!
+                    setTimeout(function() {
+                        $(grid_selector).jqGrid( 'setGridWidth', parent_column.width() );
+                    }, 20);
+                }
+            })
+
+            //if your grid is inside another element, for example a tab pane, you should use its parent's width:
+            /**
+             $(window).on('resize.jqGrid', function () {
+			var parent_width = $(grid_selector).closest('.tab-pane').width();
+			$(grid_selector).jqGrid( 'setGridWidth', parent_width );
+		})
+             //and also set width when tab pane becomes visible
+             $('#myTab a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		  if($(e.target).attr('href') == '#mygrid') {
+			var parent_width = $(grid_selector).closest('.tab-pane').width();
+			$(grid_selector).jqGrid( 'setGridWidth', parent_width );
+		  }
+		})
+             */
+
+            var colModel = [
+                {name:'person_id',index:'person_id',width:60, editable: true,key:true,search:false,formoptions:{rowpos:1,colpos:1}},
+                {name:'ssxm_ls',index:'ssxm_ls', width:150,search:false,editable: true,hidden:true,editrules:{edithidden:true},formoptions:{rowpos:1,colpos:2}},
+                {name:'ssxm',index:'ssxm', width:150,search:false,editable:true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:1}},
+                {name:'zw',index:'zw', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:基层;1:管理层"},formoptions:{rowpos:2,colpos:2}},
+                {name:'gw',index:'gw', width:90, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:3},searchoptions:{sopt:['eq','cn']}},
+                {name:'xm',index:'xm', width:70, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:4},searchoptions:{sopt:['eq','cn']}},
+                {name:'rzrq',index:'rzrq', width:90, editable: true,editrules: {required:true},formoptions:{rowpos:3,colpos:1},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
+                {name:'lzrq',index:'lzrq', width:90, editable: true,formoptions:{rowpos:3,colpos:3},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}},editrules: {custom:true,custom_func:checkZzzt}},
+                {name:'zzzt',index:'zzzt', width:80, editable: true,search:true,edittype:"select",editoptions:{value:"0:在职;1:离职"},formoptions:{rowpos:3,colpos:2},searchoptions:{sopt:['eq'],value:"0:在职;1:离职"},stype:'select'},
+                {name:'gl',index:'gl', width:60, editable: false,search:false},
+                {name:'sfzh',index:'sfzh', editable: true,editoptions:{maxlength:"18"},editrules: {required:true,custom:true,custom_func:checkUserCardId},formoptions:{rowpos:3,colpos:4},searchoptions:{sopt:['eq','cn']}},
+                {name:'yhkh',index:'yhkh', editable: true,editoptions:{maxlength:"19"},editrules: {required:true,custom:true,custom_func:checkBankCardId},formoptions:{rowpos:4,colpos:1},searchoptions:{sopt:['eq','cn']}},
+                {name:'xb',index:'xb', width:60, search:false, editable: true,edittype:"select",editoptions:{value:"0:男性;1:女性"},formoptions:{rowpos:4,colpos:2}},
+                {name:'csrq',index:'csrq', width:90, editable: false,searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
+                {name:'csyf',index:'csyf', width:70, editable: false,search:false},
+                {name:'nl',index:'nl', width:60, editable: false,search:false},
+                {name:'zzmm',index:'zzmm', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:党员;1:团员;2:群众"},formoptions:{rowpos:4,colpos:3}},
+                {name:'xl',index:'xl', width:60, editable: true,search:false,edittype:"select",editoptions:{value:"0:小学;1:初中;2:高中;3:中专;4:大专;5:本科;6:硕士;7:博士"},formoptions:{rowpos:4,colpos:4}},
+                {name:'byyx',index:'byyx', editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:5,colpos:1}},
+                {name:'zy',index:'zy', editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:5,colpos:2}},
+                {name:'bysj',index:'bysj', width:90, search:false,editable: true,editrules: {required:true},formoptions:{rowpos:5,colpos:3}},
+                {name:'gzjl',index:'gzjl', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:9,colpos:1}},
+                {name:'hyzk',index:'hyzk', width:66, search:false,editable: true,edittype:"select",editoptions:{value:"0:已婚;1:未婚;2:离异"},formoptions:{rowpos:5,colpos:4}},
+                {name:'jtzz',index:'jtzz', editable: true,editoptions:{maxlength:"50"},editrules: {required:true},editrules: {required:true},search:false,formoptions:{rowpos:8,colpos:1}},
+                {name:'xzz',index:'xzz', editable: true,editoptions:{maxlength:"50"},editrules: {required:true},search:false,formoptions:{rowpos:8,colpos:3}},
+                {name:'lxdh',index:'lxdh', width:80, editable: true,editoptions:{maxlength:"20"},editrules: {required:true},search:false,formoptions:{rowpos:6,colpos:1}},
+                {name:'jjlxr',index:'jjlxr', width:80, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:6,colpos:3}},
+                {name:'gx',index:'gx', width:60, editable: true,editoptions:{maxlength:"10"},editrules: {required:true},search:false,formoptions:{rowpos:6,colpos:4}},
+                {name:'jjlxrdh',index:'jjlxrdh', width:110, search:false,editable: true,editoptions:{maxlength:"20"},editrules: {required:true},formoptions:{rowpos:7,colpos:1}},
+                {name:'htlb',index:'htlb', width:80, search:false,editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同"},formoptions:{rowpos:6,colpos:2}},
+                {name:'bz',index:'bz', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:9,colpos:3}}
+            ];
+
+            if(location.href.indexOf('wap') != -1){
+                colModel = [
+                    {name:'person_id',index:'person_id',width:60, editable: true,key:true,search:false,formoptions:{rowpos:1,colpos:1}},
+                    {name:'ssxm_ls',index:'ssxm_ls', width:150,search:false,hidden:true,editrules:{edithidden:true},formoptions:{rowpos:1,colpos:2}},
+                    {name:'ssxm',index:'ssxm', width:150,search:false,editable:true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:1}},
+                    {name:'zw',index:'zw', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:基层;1:管理层"},formoptions:{rowpos:2,colpos:2}},
+                    {name:'gw',index:'gw', width:90, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:3,colpos:1},searchoptions:{sopt:['eq','cn']}},
+                    {name:'xm',index:'xm', width:70, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:3,colpos:2},searchoptions:{sopt:['eq','cn']}},
+                    {name:'rzrq',index:'rzrq', width:90, editable: true,editrules: {required:true},formoptions:{rowpos:4,colpos:1},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
+                    {name:'lzrq',index:'lzrq', width:90, editable: true,formoptions:{rowpos:5,colpos:1},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}},editrules: {custom:true,custom_func:checkZzzt}},
+                    {name:'zzzt',index:'zzzt', width:80, editable: true,search:false,edittype:"select",editoptions:{value:"0:在职;1:离职"},formoptions:{rowpos:4,colpos:2}},
+                    {name:'gl',index:'gl', width:60, editable: false,search:false},
+                    {name:'sfzh',index:'sfzh', editable: true,editoptions:{maxlength:"18"},editrules: {required:true,custom:true,custom_func:checkUserCardId},formoptions:{rowpos:5,colpos:2},searchoptions:{sopt:['eq','cn']}},
+                    {name:'yhkh',index:'yhkh', editable: true,editoptions:{maxlength:"19"},editrules: {required:true,custom:true,custom_func:checkBankCardId},formoptions:{rowpos:6,colpos:1},searchoptions:{sopt:['eq','cn']}},
+                    {name:'xb',index:'xb', width:60, search:false, editable: true,edittype:"select",editoptions:{value:"0:男性;1:女性"},formoptions:{rowpos:6,colpos:2}},
+                    {name:'csrq',index:'csrq', width:90, editable: false,searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
+                    {name:'csyf',index:'csyf', width:70, editable: false,search:false},
+                    {name:'nl',index:'nl', width:60, editable: false,search:false},
+                    {name:'zzmm',index:'zzmm', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:党员;1:团员;2:群众"},formoptions:{rowpos:7,colpos:1}},
+                    {name:'xl',index:'xl', width:60, editable: true,search:false,edittype:"select",editoptions:{value:"0:小学;1:初中;2:高中;3:中专;4:大专;5:本科;6:硕士;7:博士"},formoptions:{rowpos:7,colpos:2}},
+                    {name:'byyx',index:'byyx', editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:8,colpos:1}},
+                    {name:'zy',index:'zy', editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:8,colpos:2}},
+                    {name:'bysj',index:'bysj', width:90, search:false,editable: true,editrules: {required:true},formoptions:{rowpos:9,colpos:1}},
+                    {name:'gzjl',index:'gzjl', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:15,colpos:1}},
+                    {name:'hyzk',index:'hyzk', width:66, search:false,editable: true,edittype:"select",editoptions:{value:"0:已婚;1:未婚;2:离异"},formoptions:{rowpos:9,colpos:2}},
+                    {name:'jtzz',index:'jtzz', editable: true,editoptions:{maxlength:"50"},editrules: {required:true},editrules: {required:true},search:false,formoptions:{rowpos:13,colpos:1}},
+                    {name:'xzz',index:'xzz', editable: true,editoptions:{maxlength:"50"},editrules: {required:true},search:false,formoptions:{rowpos:14,colpos:1}},
+                    {name:'lxdh',index:'lxdh', width:80, editable: true,editoptions:{maxlength:"20"},editrules: {required:true},search:false,formoptions:{rowpos:10,colpos:1}},
+                    {name:'jjlxr',index:'jjlxr', width:80, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:11,colpos:1}},
+                    {name:'gx',index:'gx', width:60, editable: true,editoptions:{maxlength:"10"},editrules: {required:true},search:false,formoptions:{rowpos:11,colpos:2}},
+                    {name:'jjlxrdh',index:'jjlxrdh', width:110, search:false,editable: true,editoptions:{maxlength:"20"},editrules: {required:true},formoptions:{rowpos:12,colpos:1}},
+                    {name:'htlb',index:'htlb', width:80, search:false,editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同"},formoptions:{rowpos:10,colpos:2}},
+                    {name:'bz',index:'bz', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:16,colpos:1}}
+                ];
+            }
+
+
+            jQuery(grid_selector).jqGrid({
+                url:"php/person.php?oper=query",
+                datatype: "json",
+                height: 250,
+                colNames:['序号','所属项目/部门','所属项目/部门','职务','岗位','姓名','入职日期','离职日期','在职状态','工龄','身份证号','银行卡号','性别','出生日期','出生月份','年龄','政治面貌','学历','毕业院校','专业','毕业时间','入职前工作经历','婚姻状况','家庭住址（身份证）','现住址','联系电话','紧急联系人','关系','紧急联系人电话','合同类别','备注'],
+                colModel:colModel,
+
+                viewrecords : true,
+                rowNum:10,
+                rowList:[10,20,30],
+                pager : pager_selector,
+                altRows: true,
+
+                multiselect: true,
+                multiboxonly: true,
+
+                shrinkToFit:false,
+                autoScroll: true,
+
+                loadComplete : function(t) {
+                    if(t.code == '402'){
+                        //bootbox.alert({message:"登陆超时，请重新登陆！",size:"small",function(){}});
+                        alert('登陆超时，请重新登陆！');
+                        var href = './login.html';
+                        if(location.href.indexOf('wap') != -1){
+                            href += '?type=wap';
+                        }
+                        location.href = href;
+                    }
+                    var table = this;
+                    setTimeout(function(){
+                        styleCheckbox(table);
+
+                        updateActionIcons(table);
+                        updatePagerIcons(table);
+                        enableTooltips(table);
+
+                        if(location.href.indexOf('wap') != -1){
+                            resizePager(table);
+                        }
+                    }, 0);
+                },
+
+                loadError: function(xhr,status,error){
+                    alert(status + " loading data of " + error );
+                },
+
+                editurl: "php/person.php",//nothing is saved
+                caption: "项目人员档案",
+                autowidth: true
+
+            });
+            $(window).triggerHandler('resize.jqGrid');//trigger window resize to make the grid get the correct size
+
+            /**
+             *校验身份证号
+             */
+            function checkUserCardId(value,name){
+                if(!value || !/^\d{6}(18|19|20)?\d{2}(0[1-9]|1[012])(0[1-9]|[12]\d|3[01])\d{3}(\d|X)$/i.test(value)){
+                    return [false,name+':请输入正确的身份证号'];
+                }else{
+                    return [true];
+                }
+            }
+
+            /**
+             *校验身份证号
+             */
+            function checkBankCardId(value,name){
+                if(!value || (value.length != 16 && value.length != 19) || (!/^\d{16}$/i.test(value) && !/^\d{19}$/i.test(value))){
+                    return [false,name+':请输入正确的银行卡号'];
+                }else{
+                    return [true];
+                }
+            }
+
+            function checkZzzt(value,name){
+                var zzzt = $('#zzzt').val();
+                var rzrq = $('#rzrq').val();
+                var todayDate = new Date();
+                var today = todayDate.getFullYear() + '-' + ((todayDate.getMonth()+1)<10?('0'+(todayDate.getMonth()+1)):(todayDate.getMonth()+1)) + '-' + (todayDate.getDate()<10?('0'+todayDate.getDate()):todayDate.getDate());
+                if(zzzt == '0' && value != ''){
+                    return [false,name+':在职状态不能填写离职日期'];
+                }else if(zzzt == '1' && value == ''){
+                    return [false,name+':离职状态请填写离职日期'];
+                }else if(zzzt == '1' && rzrq >= value){
+                    return [false,name+':离职日期不能小于入职日期'];
+                }else if(zzzt == '1' && value > today){
+                    return [false,name+':离职日期不能大于当前日期'];
+                }else{
+                    return [true];
+                }
+            }
+
+
+
+            //enable search/filter toolbar
+            //jQuery(grid_selector).jqGrid('filterToolbar',{defaultSearch:true,stringResult:true})
+            //jQuery(grid_selector).filterToolbar({});
+
+            /*var template = "<div style='margin-left:15px;'>";
+            template += "<div> 职务:</div><div> {zw} </div>";
+            template += "<div> 岗位: </div><div>{gw} </div>";
+            template += "<div> 姓名: </div><div>{xm} </div>";
+            template += "<div> 入职日期:</div><div> {rzrq} </div>";
+            template += "<hr style='width:100%;'/>";
+            template += "<div> {sData} {cData}  </div></div>";*/
+
+            //navButtons
+            jQuery(grid_selector).jqGrid('navGrid',pager_selector,
+                    { 	//navbar options
+                        edit: true,
+                        edittitle:'',
+                        //edittext:'编辑',
+                        editicon : 'ace-icon fa fa-pencil blue',
+                        add: true,
+                        addtitle:'',
+                        addicon : 'ace-icon fa fa-plus-circle purple',
+                        del: true,
+                        deltitle:'',
+                        delicon : 'ace-icon fa fa-trash-o red',
+                        search: true,
+                        searchtitle:'',
+                        searchicon : 'ace-icon fa fa-search orange',
+                        refresh: true,
+                        refreshtitle:'',
+                        refreshicon : 'ace-icon fa fa-refresh green'
+                    },
+                    {
+                        //edit record form
+                        editCaption:'编辑人员档案',
+                        closeAfterEdit: true,
+                        //width: 700,
+                        recreateForm: true,
+                        //template: template,
+                        beforeShowForm : function(e) {
+                            //delete this.p.colModel[6].editrules.required;
+                            var form = $(e[0]);
+                            form.closest('.ui-jqdialog').find('.ui-jqdialog-titlebar').wrapInner('<div class="widget-header" />')
+                            style_edit_form(form);
+                        }
+                    },
+                    {
+                        //new record form
+                        //width: 700,
+                        addCaption:'新增人员档案',
+                        closeAfterAdd: true,
+                        recreateForm: true,
+                        viewPagerButtons: false,
+                        //template: template,
+                        beforeShowForm : function(e) {
+                            var form = $(e[0]);
+                            form.closest('.ui-jqdialog').find('.ui-jqdialog-titlebar')
+                                    .wrapInner('<div class="widget-header" />')
+                            if($.cookie("user_sf") != 1){
+                                form.find('input[name=ssxm]').attr('disabled','disabled');
+                                form.find('input[name=ssxm]').val($.cookie("user_ssxm"));
+                            }
+                            style_edit_form(form);
+                        }
+                    },
+                    {
+                        //delete record form
+                        recreateForm: true,
+                        beforeShowForm : function(e) {
+                            var form = $(e[0]);
+                            if(form.data('styled')) return false;
+
+                            form.closest('.ui-jqdialog').find('.ui-jqdialog-titlebar').wrapInner('<div class="widget-header" />')
+                            style_delete_form(form);
+
+                            form.data('styled', true);
+                        },
+                        onClick : function(e) {
+                            //alert(1);
+                        }
+                    },
+                    {
+                        //search form
+                        closeAfterSearch:true,
+                        recreateForm: true,
+                        afterShowSearch: function(e){
+                            var form = $(e[0]);
+                            form.closest('.ui-jqdialog').find('.ui-jqdialog-title').wrap('<div class="widget-header" />')
+                            style_search_form(form);
+                        },
+                        afterRedraw: function(){
+                            style_search_filters($(this));
+                        }
+                        ,
+                        multipleSearch: true
+                        /**
+                         multipleGroup:true,
+                         showQuery: true*/
+
+                    }
+            )
+
+            if(location.href.indexOf('wap') == -1){
+                jQuery(grid_selector).jqGrid('navButtonAdd',pager_selector,
+                        {
+                            caption:'',
+                            title:'导出',
+                            buttonicon: 'ace-icon fa fa-cloud-download grey',
+                            onClickButton:function(t){
+
+
+                                $.ajax({
+                                    type: "post",
+                                    url: "php/person.php?oper=query&rows=50000&page=1&type=export",
+                                    dataType: "json",
+                                    beforeSend: function (e) {
+                                        e.setRequestHeader("Content-Type", "application/json")
+                                    },
+                                    success: function(t) {
+
+                                        //jqgrid excel导出 依赖jszip、jqgrid 5.3.1以上版本
+                                        jQuery(grid_selector).jqGrid("exportToExcel",{
+                                            includeLabels : true,
+                                            includeGroupHeader : false,
+                                            includeFooter: false,
+                                            fileName : "人员档案列表.xlsx",
+                                            //maxlength : 40 // maxlength for visible string data
+                                            data: t.rows
+                                        })
+                                    },
+                                    error: function(t) {
+                                        //$('#error_div').css('display','');
+                                        //$('#error_msg').html(t.message);
+                                    }
+                                });
+
+                            }
+                        });
+            }
+
+            /** 自定义搜索
+             jQuery("#mysearch").jqGrid('filterGrid',grid_selector,{
+			gridModel:true,
+			gridNames:true,
+			searchButton:"查询",
+			enableSearch:true,
+			enableClear:true,
+			clearButton:"清空",
+			buttonclass:"btn btn-sm btn-primary",
+		});*/
+
+            /** 搜索工具栏
+             jQuery(grid_selector).jqGrid('filterToolbar',{});
+             */
+
+
+
+
+
+            function style_edit_form(form) {
+
+                //调整表格宽度
+                $($(form)[0].parentElement.parentElement.parentElement).css('width','auto');
+                $($(form)[0].parentElement.parentElement.parentElement).css('top','50px');
+                form.find('select').each(function(){
+                    //$(this).removeClass();
+                    $(this).css({'width':'150px','max-width':'100%','height':'35px'});
+                });
+
+                form.find('input').each(function(){
+                    //$(this).removeClass();
+                    $(this).css({'width':'150px','max-width':'100%','height':'35px'});
+                });
+                form.find('input[name=jtzz]').parent().next().remove();
+                form.find('input[name=jtzz]').parent().next().remove();
+                form.find('input[name=jtzz]').parent().attr('colspan',3);
+                //form.find('input[name=jtzz]').removeClass();
+                form.find('input[name=jtzz]').css({'width':'99%','float':'left','position':'relative','min-height':'1px'});
+
+                form.find('input[name=xzz]').parent().next().remove();
+                form.find('input[name=xzz]').parent().next().remove();
+                form.find('input[name=xzz]').parent().attr('colspan',3);
+                //form.find('input[name=xzz]').removeClass();
+                //form.find('input[name=xzz]').addClass('col-xs-11');
+                form.find('input[name=xzz]').css({'width':'99%','float':'left','position':'relative','min-height':'1px'});
+
+                form.find('textarea[name=gzjl]').parent().next().remove();
+                form.find('textarea[name=gzjl]').parent().next().remove();
+                form.find('textarea[name=gzjl]').parent().attr('colspan',3);
+
+                form.find('textarea[name=bz]').parent().next().remove();
+                form.find('textarea[name=bz]').parent().next().remove();
+                form.find('textarea[name=bz]').parent().attr('colspan',3);
+
+                form.find('select[name=xl]').val(5);
+                form.find('select[name=zzmm]').val(2);
+                form.find('select[name=hyzk]').val(1);
+                form.find('select[name=htlb]').val(1);
+
+                //enable datepicker on "lrrq" field and switches for "user_sf" field
+                form.find('input[name=rzrq]').datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});
+                form.find('input[name=lzrq]').datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});
+                form.find('input[name=bysj]').datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});
+
+                //form.find('input[name=user_sf]').addClass('ace ace-switch ace-switch-5').after('<span class="lbl"></span>');
+                //don't wrap inside a label element, the checkbox value won't be submitted (POST'ed)
+                //.addClass('ace ace-switch ace-switch-5').wrap('<label class="inline" />').after('<span class="lbl"></span>');
+                /*form.find('input[name=user_sf]').on('click',function(){
+                 if(this.checked && $('#ssxm').val() == ''){
+                 $('#ssxm').val('总部项目部');
+                 $('#ssxm').attr("disabled","disabled");
+                 }
+                 });*/
+                //form.find('input[name=lrrq]').parent().parent().css('display','none')
+
+                //update buttons classes
+                var buttons = form.next().find('.EditButton .fm-button');
+                buttons.addClass('btn btn-sm').find('[class*="-icon"]').hide();//ui-icon, s-icon
+                buttons.eq(0).addClass('btn-primary').prepend('<i class="ace-icon fa fa-check"></i>');
+                buttons.eq(1).prepend('<i class="ace-icon fa fa-times"></i>')
+
+                buttons = form.next().find('.navButton a');
+                buttons.find('.ui-icon').hide();
+                buttons.eq(0).append('<i class="ace-icon fa fa-chevron-left"></i>');
+                buttons.eq(1).append('<i class="ace-icon fa fa-chevron-right"></i>');
+            }
+
+            function style_delete_form(form) {
+                var buttons = form.next().find('.EditButton .fm-button');
+                buttons.addClass('btn btn-sm btn-white btn-round').find('[class*="-icon"]').hide();//ui-icon, s-icon
+                buttons.eq(0).addClass('btn-danger').prepend('<i class="ace-icon fa fa-trash-o"></i>');
+                buttons.eq(1).addClass('btn-default').prepend('<i class="ace-icon fa fa-times"></i>')
+            }
+
+            function style_search_filters(form) {
+                form.find('.delete-rule').val('X');
+                form.find('.add-rule').addClass('btn btn-xs btn-primary');
+                form.find('.add-group').addClass('btn btn-xs btn-success');
+                form.find('.delete-group').addClass('btn btn-xs btn-danger');
+            }
+
+            function style_search_form(form) {
+                var dialog = form.closest('.ui-jqdialog');
+                var buttons = dialog.find('.EditTable')
+                buttons.find('.EditButton a[id*="_reset"]').addClass('btn btn-sm btn-info').find('.ui-icon').attr('class', 'ace-icon fa fa-retweet');
+                buttons.find('.EditButton a[id*="_query"]').addClass('btn btn-sm btn-inverse').find('.ui-icon').attr('class', 'ace-icon fa fa-comment-o');
+                buttons.find('.EditButton a[id*="_search"]').addClass('btn btn-sm btn-purple').find('.ui-icon').attr('class', 'ace-icon fa fa-search');
+
+            }
+
+
+
+            //it causes some flicker when reloading or navigating grid
+            //it may be possible to have some custom formatter to do this as the grid is being created to prevent this
+            //or go back to default browser checkbox styles for the grid
+            function styleCheckbox(table) {
+                /**
+                 $(table).find('input:checkbox').addClass('ace')
+                 .wrap('<label />')
+                 .after('<span class="lbl align-top" />')
+
+
+                 $('.ui-jqgrid-labels th[id*="_cb"]:first-child')
+                 .find('input.cbox[type=checkbox]').addClass('ace')
+                 .wrap('<label />').after('<span class="lbl align-top" />');
+                 */
+            }
+
+
+            //unlike navButtons icons, action icons in rows seem to be hard-coded
+            //you can change them like this in here if you want
+            function updateActionIcons(table) {
+                /**
+                 var replacement =
+                 {
+                     'ui-ace-icon fa fa-pencil' : 'ace-icon fa fa-pencil blue',
+                     'ui-ace-icon fa fa-trash-o' : 'ace-icon fa fa-trash-o red',
+                     'ui-icon-disk' : 'ace-icon fa fa-check green',
+                     'ui-icon-cancel' : 'ace-icon fa fa-times red'
+                 };
+                 $(table).find('.ui-pg-div span.ui-icon').each(function(){
+				var icon = $(this);
+				var $class = $.trim(icon.attr('class').replace('ui-icon', ''));
+				if($class in replacement) icon.attr('class', 'ui-icon '+replacement[$class]);
+			})
+                 */
+            }
+
+            /**
+             * 修改手机端翻页遮罩问题
+             * @param table
+             */
+            function resizePager(table){
+                $('.ui-pager-table').css('height','50%');
+            }
+
+            //replace icons with FontAwesome icons like above
+            function updatePagerIcons(table) {
+                var replacement =
+                {
+                    'ui-icon-seek-first' : 'ace-icon fa fa-angle-double-left bigger-140',
+                    'ui-icon-seek-prev' : 'ace-icon fa fa-angle-left bigger-140',
+                    'ui-icon-seek-next' : 'ace-icon fa fa-angle-right bigger-140',
+                    'ui-icon-seek-end' : 'ace-icon fa fa-angle-double-right bigger-140'
+                };
+                $('.ui-pg-table:not(.navtable) > tbody > tr > .ui-pg-button > .ui-icon').each(function(){
+                    var icon = $(this);
+                    var $class = $.trim(icon.attr('class').replace('ui-icon', ''));
+
+                    if($class in replacement) icon.attr('class', 'ui-icon '+replacement[$class]);
+                })
+            }
+
+            function enableTooltips(table) {
+                $('.navtable .ui-pg-button').tooltip({container:'body'});
+                $(table).find('.ui-pg-div').tooltip({container:'body'});
+            }
+
+            //var selr = jQuery(grid_selector).jqGrid('getGridParam','selrow');
+
+            $(document).one('ajaxloadstart.page', function(e) {
+                $.jgrid.gridDestroy(grid_selector);
+                $('.ui-jqdialog').remove();
+            });
+        });
+    });
+</script>
