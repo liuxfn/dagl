@@ -3,8 +3,9 @@
 /**
  * Created by PhpStorm.
  * User: lxf
- * Date: 12/20 0020
- * Time: 20:13
+ * Date: 2018年9月6日
+ * Time: 19点58分
+ * Desc: 生成UUID
  */
 class commonUtil
 {

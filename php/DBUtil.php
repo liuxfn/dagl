@@ -3,8 +3,9 @@
 /**
  * Created by PhpStorm.
  * User: lxf
- * Date: 12/21 0021
- * Time: 14:56
+ * Date: 2018-9-6
+ * Time: 19:59:10
+ * Desc: 数据库工具类
  */
 class DBUtil
 {
