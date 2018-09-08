@@ -78,12 +78,15 @@ jQuery(function($) {
 				if( !hash.match(/^page\//) ) return false;
 				var path = document.location.pathname;
 
+				 //修改路径获取方式 避免根据字段判断
+				 return 'content/'+hash.replace(/^page\//, '')+'.html';
+
 				//for example in Ace HTML demo version we convert /ajax/index.html#page/gallery to > /ajax/content/gallery.html and load it
-				if(path.match(/(\/dagl\/)(index\.html)?/))
-					return path.replace(/(\/dagl\/)(index\.html)?/, '/dagl/content/'+hash.replace(/^page\//, '')+'.html') ;
+				//if(path.match(/(\/dagl\/)(index\.html)?/))
+					//return path.replace(/(\/dagl\/)(index\.html)?/, '/dagl/content/'+hash.replace(/^page\//, '')+'.html') ;
 
 				//for example in Ace PHP demo version we convert "ajax.php#page/dashboard" to "ajax.php?page=dashboard" and load it
-				return path + "?" + hash.replace(/\//, "=");
+				//return path + "?" + hash.replace(/\//, "=");
 			  }			  
 		}
 		   
