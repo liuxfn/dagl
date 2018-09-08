@@ -26,8 +26,8 @@ class DBUtil
 
     public function querySql($sql)
     {
-        file_put_contents("log.txt",'---------------------------------------------------',FILE_APPEND);
-        file_put_contents("log.txt",$sql,FILE_APPEND);
+        //file_put_contents("log.txt",'---------------------------------------------------',FILE_APPEND);
+        //file_put_contents("log.txt",$sql,FILE_APPEND);
         if(!isset($sql)||empty($sql))
         {
             return "";
@@ -56,8 +56,8 @@ class DBUtil
 
     public function updateSql($sql)
     {
-        file_put_contents("log.txt",'---------------------------------------------------',FILE_APPEND);
-        file_put_contents("log.txt",$sql,FILE_APPEND);
+        //file_put_contents("log.txt",'---------------------------------------------------',FILE_APPEND);
+        //file_put_contents("log.txt",$sql,FILE_APPEND);
         if(!isset($sql)||empty($sql))
         {
             return "";

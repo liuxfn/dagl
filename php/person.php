@@ -271,6 +271,7 @@ function personHandler()
     }else if("edit" == $method && isset($_GET['zzzt'])){
         $sql = "UPDATE person SET
           zzzt = '".$_POST['zzzt']."',
+          lzrq = null,
           xgr = ".$_SESSION['user_id'].",
           XGRQ=now()
           WHERE person_id = ".$_POST['person_id'];
