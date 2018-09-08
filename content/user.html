@@ -36,6 +36,16 @@
 
 <!-- page specific plugin scripts -->
 <script type="text/javascript">
+
+	if($.cookie("user_sf") != 1){
+		var href = './index.html';
+		if(location.href.indexOf('wap') != -1){
+			href += '?type=wap';
+		}
+		location.href = href;
+	}
+
+
 	var scripts = [
 		"components/jqGrid/js/jquery.jqGrid.v5.3.1.js",
 		"components/jqGrid/js/minified/i18n/grid.locale-cn.js",

@@ -108,28 +108,37 @@
 
 				<ul class="nav nav-list">
 					
-					<li class="">
+					<li id="user_li" class="">
 						<a data-url="page/user" href="#page/user">
-							<i class="menu-icon fa fa-user"></i>
+							<i class="menu-icon fa fa-user blue"></i>
 							<span class="menu-text"> 系统用户管理 </span>
 						</a>
 
 						<b class="arrow"></b>
 					</li>
 					
-					<li class="">
+					<li id="person_li" class="">
 						<a data-url="page/person" href="#page/person">
-							<i class="menu-icon fa fa-users"></i>
+							<i class="menu-icon fa fa-users blue"></i>
 							<span class="menu-text"> 人员档案管理 </span>
 						</a>
 
 						<b class="arrow"></b>
 					</li>
 
-					<li class="">
+					<li id="persondd_li" class="">
 						<a data-url="page/persondd" href="#page/persondd">
-							<i class="menu-icon fa fa-exchange"></i>
+							<i class="menu-icon fa fa-exchange blue"></i>
 							<span class="menu-text"> 人员调动情况 </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+
+					<li id="personlz_li" class="">
+						<a data-url="page/personlz" href="#page/personlz">
+							<i class="menu-icon fa fa-users grey"></i>
+							<span class="menu-text"> 离职人员档案管理 </span>
 						</a>
 
 						<b class="arrow"></b>
@@ -213,8 +222,11 @@
 						}else{
 							$('#user_name').html($.cookie("user_name"));
 							if($.cookie("user_sf") != 1){
-								$('.nav-list').children(':first').remove();
-								$('.nav-list').children(':last').remove();
+								//$('.nav-list').children(':first').remove();
+								//$('.nav-list').children(':last').remove();
+								$('#user_li').remove();
+								$('#persondd_li').remove();
+								$('#personlz_li').remove();
 							}
 						}
 					},

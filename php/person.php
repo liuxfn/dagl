@@ -20,6 +20,7 @@ function query()
     //$userId = $_SESSION['user_sf']; todo 身份校验
     $queryCondition = buildQueryCondition();
     $sql = "";
+    $zzzt = isset($_GET['zzzt'])?1:0;
     if(isset($_GET['type'])){
         $sql = "select
         CONCAT(' ',person_id) person_id,
@@ -56,6 +57,7 @@ function query()
         CONCAT(' ',date_format(case xgrq when null then lrrq else xgrq end,'%Y-%m-%d %H:%i:%s')) czsj
         from person
         where yxbz = 'Y'
+        and zzzt = '".$zzzt."'
         and ".$ssxm_con."
         and ".$queryCondition."
         limit ".(($pageNo-1)*$pageSize).",".$pageSize;
@@ -95,6 +97,7 @@ function query()
         date_format(case xgrq when null then lrrq else xgrq end,'%Y-%m-%d %H:%i:%s') czsj
         from person
         where yxbz = 'Y'
+        and zzzt = '".$zzzt."'
         and ".$ssxm_con."
         and ".$queryCondition."
         limit ".(($pageNo-1)*$pageSize).",".$pageSize;
@@ -217,7 +220,7 @@ function personHandler()
           null,
           null,
           'Y')";
-    }else if("edit" == $method){
+    }else if("edit" == $method && !isset($_GET['zzzt'])){
         $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";
         $sql = "UPDATE person SET
           ssxm = '".$_POST['ssxm']."',
@@ -265,6 +268,12 @@ function personHandler()
             '".$_POST['ssxm']."',now())";
             updatePerson($sql_td);
         }
+    }else if("edit" == $method && isset($_GET['zzzt'])){
+        $sql = "UPDATE person SET
+          zzzt = '".$_POST['zzzt']."',
+          xgr = ".$_SESSION['user_id'].",
+          XGRQ=now()
+          WHERE person_id = ".$_POST['person_id'];
     }else if("del" == $method){
         $sql = "UPDATE person SET YXBZ = 'N',XGRQ=now(),XGR=".$_SESSION['user_id']." WHERE person_id in (".$_POST['id'].")";
     }
