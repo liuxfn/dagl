@@ -38,7 +38,7 @@ function query()
         CONCAT(' ',date_format(csrq,'%Y-%m-%d')) csrq,
         CONCAT(date_format(csrq,'%m'),'月') csyf,
         TIMESTAMPDIFF(YEAR, date_format(csrq,'%Y-%m-%d'), CURDATE()) nl,
-        case zzmm when 0 then '党员' when 1 then '团员' else '群众' end zzmm,
+        case zzmm when 0 then '中共党员' when 1 then '民主党派' when 2 then '共青团员' else '群众' end zzmm,
         case xl when 0 then '小学' when 1 then '初中' when 2 then '高中' when 3 then '中专' when 4 then '大专' when 5 then '本科' when 6 then '硕士' else '博士' end xl,
         byyx,
         zy,
@@ -51,8 +51,9 @@ function query()
         jjlxr,
         gx,
         CONCAT(' ',jjlxrdh) jjlxrdh,
-        case htlb when 0 then '外包合同' else '公司合同' end htlb,
-        bz
+        case htlb when 0 then '外包合同' when 1 then '公司合同' else '劳务派遣' end htlb,
+        bz,
+        CONCAT(' ',date_format(case xgrq when null then lrrq else xgrq end,'%Y-%m-%d %H:%i:%s')) czsj
         from person
         where yxbz = 'Y'
         and ".$ssxm_con."
@@ -76,7 +77,7 @@ function query()
         date_format(csrq,'%Y-%m-%d') csrq,
         CONCAT(date_format(csrq,'%m'),'月') csyf,
         TIMESTAMPDIFF(YEAR, date_format(csrq,'%Y-%m-%d'), CURDATE()) nl,
-        case zzmm when 0 then '党员' when 1 then '团员' else '群众' end zzmm,
+        case zzmm when 0 then '中共党员' when 1 then '民主党派' when 2 then '共青团员' else '群众' end zzmm,
         case xl when 0 then '小学' when 1 then '初中' when 2 then '高中' when 3 then '中专' when 4 then '大专' when 5 then '本科' when 6 then '硕士' else '博士' end xl,
         byyx,
         zy,
@@ -89,8 +90,9 @@ function query()
         jjlxr,
         gx,
         jjlxrdh,
-        case htlb when 0 then '外包合同' else '公司合同' end htlb,
-        bz
+        case htlb when 0 then '外包合同' when 1 then '公司合同' else '劳务派遣' end htlb,
+        bz,
+        date_format(case xgrq when null then lrrq else xgrq end,'%Y-%m-%d %H:%i:%s') czsj
         from person
         where yxbz = 'Y'
         and ".$ssxm_con."

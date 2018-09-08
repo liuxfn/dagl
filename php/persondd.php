@@ -25,7 +25,7 @@ function queryPersonDD()
       xm,
       ssxm_bgq,
       ssxm_bgh,
-      date_format(lrrq,'%Y-%m-%d') lrrq
+      date_format(lrrq,'%Y-%m-%d %H:%i:%s') lrrq
       from person_ddls where 1=1 and ".$queryCondition." limit ".(($pageNo-1)*$pageSize).",".$pageSize);
 
     $rtnArray = json_decode($reslult,true);

@@ -85,70 +85,75 @@
             var colModel = [
                 {name:'person_id',index:'person_id',width:60, editable: true,key:true,search:false,formoptions:{rowpos:1,colpos:1}},
                 {name:'ssxm_ls',index:'ssxm_ls', width:150,search:false,editable: true,hidden:true,editrules:{edithidden:true},formoptions:{rowpos:1,colpos:2}},
-                {name:'ssxm',index:'ssxm', width:150,search:false,editable:true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:1}},
+                {name:'ssxm',index:'ssxm', width:150,search:false,editable:true,editoptions:{maxlength:"30"},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
                 {name:'zw',index:'zw', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:基层;1:管理层"},formoptions:{rowpos:2,colpos:2}},
                 {name:'gw',index:'gw', width:90, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:3},searchoptions:{sopt:['eq','cn']}},
                 {name:'xm',index:'xm', width:70, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:4},searchoptions:{sopt:['eq','cn']}},
-                {name:'rzrq',index:'rzrq', width:90, editable: true,editrules: {required:true},formoptions:{rowpos:3,colpos:1},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
+                {name:'rzrq',index:'rzrq', width:90, editable: true,editrules: {required:true,custom:true,custom_func:checkCsrq},formoptions:{rowpos:3,colpos:1},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
                 {name:'lzrq',index:'lzrq', width:90, editable: true,formoptions:{rowpos:3,colpos:3},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}},editrules: {custom:true,custom_func:checkZzzt}},
                 {name:'zzzt',index:'zzzt', width:80, editable: true,search:true,edittype:"select",editoptions:{value:"0:在职;1:离职"},formoptions:{rowpos:3,colpos:2},searchoptions:{sopt:['eq'],value:"0:在职;1:离职"},stype:'select'},
                 {name:'gl',index:'gl', width:60, editable: false,search:false},
                 {name:'sfzh',index:'sfzh', editable: true,editoptions:{maxlength:"18"},editrules: {required:true,custom:true,custom_func:checkUserCardId},formoptions:{rowpos:3,colpos:4},searchoptions:{sopt:['eq','cn']}},
-                {name:'yhkh',index:'yhkh', editable: true,editoptions:{maxlength:"19"},editrules: {required:true,custom:true,custom_func:checkBankCardId},formoptions:{rowpos:4,colpos:1},searchoptions:{sopt:['eq','cn']}},
+                {name:'yhkh',index:'yhkh', editable: true,editoptions:{maxlength:"19"},editrules: {custom:true,custom_func:checkBankCardId},formoptions:{rowpos:4,colpos:1},searchoptions:{sopt:['eq','cn']}},
                 {name:'xb',index:'xb', width:60, search:false, editable: true,edittype:"select",editoptions:{value:"0:男性;1:女性"},formoptions:{rowpos:4,colpos:2}},
                 {name:'csrq',index:'csrq', width:90, editable: false,searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
                 {name:'csyf',index:'csyf', width:70, editable: false,search:false},
                 {name:'nl',index:'nl', width:60, editable: false,search:false},
-                {name:'zzmm',index:'zzmm', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:党员;1:团员;2:群众"},formoptions:{rowpos:4,colpos:3}},
+                {name:'zzmm',index:'zzmm', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:中共党员;1:民主党派;2:共青团员;3:群众"},formoptions:{rowpos:4,colpos:3}},
                 {name:'xl',index:'xl', width:60, editable: true,search:false,edittype:"select",editoptions:{value:"0:小学;1:初中;2:高中;3:中专;4:大专;5:本科;6:硕士;7:博士"},formoptions:{rowpos:4,colpos:4}},
-                {name:'byyx',index:'byyx', editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:5,colpos:1}},
-                {name:'zy',index:'zy', editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:5,colpos:2}},
-                {name:'bysj',index:'bysj', width:90, search:false,editable: true,editrules: {required:true},formoptions:{rowpos:5,colpos:3}},
-                {name:'gzjl',index:'gzjl', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:9,colpos:1}},
+                {name:'byyx',index:'byyx', editable: true,editoptions:{maxlength:"30"},search:false,formoptions:{rowpos:5,colpos:1}},
+                {name:'zy',index:'zy', editable: true,editoptions:{maxlength:"30"},search:false,formoptions:{rowpos:5,colpos:2}},
+                {name:'bysj',index:'bysj', width:90, search:false,editable: true,formoptions:{rowpos:5,colpos:3},editrules: {custom:true,custom_func:checkCsrq}},
+                {name:'gzjl',index:'gzjl', editable: true,editoptions:{maxlength:"500"},editrules: {required:true},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:9,colpos:1}},
                 {name:'hyzk',index:'hyzk', width:66, search:false,editable: true,edittype:"select",editoptions:{value:"0:已婚;1:未婚;2:离异"},formoptions:{rowpos:5,colpos:4}},
                 {name:'jtzz',index:'jtzz', editable: true,editoptions:{maxlength:"50"},editrules: {required:true},editrules: {required:true},search:false,formoptions:{rowpos:8,colpos:1}},
                 {name:'xzz',index:'xzz', editable: true,editoptions:{maxlength:"50"},editrules: {required:true},search:false,formoptions:{rowpos:8,colpos:3}},
-                {name:'lxdh',index:'lxdh', width:80, editable: true,editoptions:{maxlength:"20"},editrules: {required:true},search:false,formoptions:{rowpos:6,colpos:1}},
+                {name:'lxdh',index:'lxdh', width:80, editable: true,editoptions:{maxlength:"20"},editrules: {required:true,number:true},search:false,formoptions:{rowpos:6,colpos:1}},
                 {name:'jjlxr',index:'jjlxr', width:80, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:6,colpos:3}},
                 {name:'gx',index:'gx', width:60, editable: true,editoptions:{maxlength:"10"},editrules: {required:true},search:false,formoptions:{rowpos:6,colpos:4}},
-                {name:'jjlxrdh',index:'jjlxrdh', width:110, search:false,editable: true,editoptions:{maxlength:"20"},editrules: {required:true},formoptions:{rowpos:7,colpos:1}},
-                {name:'htlb',index:'htlb', width:80, search:false,editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同"},formoptions:{rowpos:6,colpos:2}},
-                {name:'bz',index:'bz', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:9,colpos:3}}
+                {name:'jjlxrdh',index:'jjlxrdh', width:110, search:false,editable: true,editoptions:{maxlength:"20"},editrules: {required:true,number:true},formoptions:{rowpos:7,colpos:1}},
+                {name:'htlb',index:'htlb', width:80, search:false,editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同;2:劳务派遣"},formoptions:{rowpos:6,colpos:2}},
+                {name:'bz',index:'bz', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:9,colpos:3}},
+                {name:'czsj',index:'czsj', width:150, search:false,editable: false}
             ];
 
+            /**
+             * 手机端编辑展示方式为两列
+             * */
             if(location.href.indexOf('wap') != -1){
                 colModel = [
                     {name:'person_id',index:'person_id',width:60, editable: true,key:true,search:false,formoptions:{rowpos:1,colpos:1}},
                     {name:'ssxm_ls',index:'ssxm_ls', width:150,search:false,hidden:true,editrules:{edithidden:true},formoptions:{rowpos:1,colpos:2}},
-                    {name:'ssxm',index:'ssxm', width:150,search:false,editable:true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:1}},
+                    {name:'ssxm',index:'ssxm', width:150,search:false,editable:true,editoptions:{maxlength:"30"},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
                     {name:'zw',index:'zw', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:基层;1:管理层"},formoptions:{rowpos:2,colpos:2}},
                     {name:'gw',index:'gw', width:90, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:3,colpos:1},searchoptions:{sopt:['eq','cn']}},
                     {name:'xm',index:'xm', width:70, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:3,colpos:2},searchoptions:{sopt:['eq','cn']}},
-                    {name:'rzrq',index:'rzrq', width:90, editable: true,editrules: {required:true},formoptions:{rowpos:4,colpos:1},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
+                    {name:'rzrq',index:'rzrq', width:90, editable: true,editrules: {required:true,custom:true,custom_func:checkCsrq},formoptions:{rowpos:4,colpos:1},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
                     {name:'lzrq',index:'lzrq', width:90, editable: true,formoptions:{rowpos:5,colpos:1},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}},editrules: {custom:true,custom_func:checkZzzt}},
-                    {name:'zzzt',index:'zzzt', width:80, editable: true,search:false,edittype:"select",editoptions:{value:"0:在职;1:离职"},formoptions:{rowpos:4,colpos:2}},
+                    {name:'zzzt',index:'zzzt', width:80, editable: true,search:false,edittype:"select",editoptions:{value:"0:在职;1:离职"},formoptions:{rowpos:4,colpos:2},searchoptions:{sopt:['eq'],value:"0:在职;1:离职"},stype:'select',search:true},
                     {name:'gl',index:'gl', width:60, editable: false,search:false},
                     {name:'sfzh',index:'sfzh', editable: true,editoptions:{maxlength:"18"},editrules: {required:true,custom:true,custom_func:checkUserCardId},formoptions:{rowpos:5,colpos:2},searchoptions:{sopt:['eq','cn']}},
-                    {name:'yhkh',index:'yhkh', editable: true,editoptions:{maxlength:"19"},editrules: {required:true,custom:true,custom_func:checkBankCardId},formoptions:{rowpos:6,colpos:1},searchoptions:{sopt:['eq','cn']}},
+                    {name:'yhkh',index:'yhkh', editable: true,editoptions:{maxlength:"19"},editrules: {custom:true,custom_func:checkBankCardId},formoptions:{rowpos:6,colpos:1},searchoptions:{sopt:['eq','cn']}},
                     {name:'xb',index:'xb', width:60, search:false, editable: true,edittype:"select",editoptions:{value:"0:男性;1:女性"},formoptions:{rowpos:6,colpos:2}},
                     {name:'csrq',index:'csrq', width:90, editable: false,searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
                     {name:'csyf',index:'csyf', width:70, editable: false,search:false},
                     {name:'nl',index:'nl', width:60, editable: false,search:false},
-                    {name:'zzmm',index:'zzmm', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:党员;1:团员;2:群众"},formoptions:{rowpos:7,colpos:1}},
+                    {name:'zzmm',index:'zzmm', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:中共党员;1:民主党派;2:共青团员;3:群众"},formoptions:{rowpos:7,colpos:1}},
                     {name:'xl',index:'xl', width:60, editable: true,search:false,edittype:"select",editoptions:{value:"0:小学;1:初中;2:高中;3:中专;4:大专;5:本科;6:硕士;7:博士"},formoptions:{rowpos:7,colpos:2}},
-                    {name:'byyx',index:'byyx', editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:8,colpos:1}},
-                    {name:'zy',index:'zy', editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:8,colpos:2}},
-                    {name:'bysj',index:'bysj', width:90, search:false,editable: true,editrules: {required:true},formoptions:{rowpos:9,colpos:1}},
-                    {name:'gzjl',index:'gzjl', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:15,colpos:1}},
+                    {name:'byyx',index:'byyx', editable: true,editoptions:{maxlength:"30"},search:false,formoptions:{rowpos:8,colpos:1}},
+                    {name:'zy',index:'zy', editable: true,editoptions:{maxlength:"30"},search:false,formoptions:{rowpos:8,colpos:2}},
+                    {name:'bysj',index:'bysj', width:90, search:false,editable: true,formoptions:{rowpos:9,colpos:1},editrules: {custom:true,custom_func:checkCsrq}},
+                    {name:'gzjl',index:'gzjl', editable: true,editoptions:{maxlength:"500"},editrules: {required:true},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:15,colpos:1}},
                     {name:'hyzk',index:'hyzk', width:66, search:false,editable: true,edittype:"select",editoptions:{value:"0:已婚;1:未婚;2:离异"},formoptions:{rowpos:9,colpos:2}},
                     {name:'jtzz',index:'jtzz', editable: true,editoptions:{maxlength:"50"},editrules: {required:true},editrules: {required:true},search:false,formoptions:{rowpos:13,colpos:1}},
                     {name:'xzz',index:'xzz', editable: true,editoptions:{maxlength:"50"},editrules: {required:true},search:false,formoptions:{rowpos:14,colpos:1}},
-                    {name:'lxdh',index:'lxdh', width:80, editable: true,editoptions:{maxlength:"20"},editrules: {required:true},search:false,formoptions:{rowpos:10,colpos:1}},
+                    {name:'lxdh',index:'lxdh', width:80, editable: true,editoptions:{maxlength:"20"},editrules: {required:true,number:true},search:false,formoptions:{rowpos:10,colpos:1}},
                     {name:'jjlxr',index:'jjlxr', width:80, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:11,colpos:1}},
                     {name:'gx',index:'gx', width:60, editable: true,editoptions:{maxlength:"10"},editrules: {required:true},search:false,formoptions:{rowpos:11,colpos:2}},
-                    {name:'jjlxrdh',index:'jjlxrdh', width:110, search:false,editable: true,editoptions:{maxlength:"20"},editrules: {required:true},formoptions:{rowpos:12,colpos:1}},
-                    {name:'htlb',index:'htlb', width:80, search:false,editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同"},formoptions:{rowpos:10,colpos:2}},
-                    {name:'bz',index:'bz', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:16,colpos:1}}
+                    {name:'jjlxrdh',index:'jjlxrdh', width:110, search:false,editable: true,editoptions:{maxlength:"20"},editrules: {required:true,number:true},formoptions:{rowpos:12,colpos:1}},
+                    {name:'htlb',index:'htlb', width:80, search:false,editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同;2:劳务派遣"},formoptions:{rowpos:10,colpos:2}},
+                    {name:'bz',index:'bz', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:16,colpos:1}},
+                    {name:'czsj',index:'czsj', width:150, search:false,editable: false}
                 ];
             }
 
@@ -157,7 +162,7 @@
                 url:"php/person.php?oper=query",
                 datatype: "json",
                 height: 250,
-                colNames:['序号','所属项目/部门','所属项目/部门','职务','岗位','姓名','入职日期','离职日期','在职状态','工龄','身份证号','银行卡号','性别','出生日期','出生月份','年龄','政治面貌','学历','毕业院校','专业','毕业时间','入职前工作经历','婚姻状况','家庭住址（身份证）','现住址','联系电话','紧急联系人','关系','紧急联系人电话','合同类别','备注'],
+                colNames:['序号','所属项目/部门','所属项目/部门','职务','岗位','姓名','入职日期','离职日期','在职状态','工龄','身份证号','银行卡号','性别','出生日期','出生月份','年龄','政治面貌','学历','毕业院校','专业','毕业时间','入职前工作经历','婚姻状况','家庭住址（身份证）','现住址','联系电话','紧急联系人','关系','紧急联系人电话','合同类别','备注','操作时间'],
                 colModel:colModel,
 
                 viewrecords : true,
@@ -222,7 +227,7 @@
              *校验身份证号
              */
             function checkBankCardId(value,name){
-                if(!value || (value.length != 16 && value.length != 19) || (!/^\d{16}$/i.test(value) && !/^\d{19}$/i.test(value))){
+                if(value && ((value.length != 16 && value.length != 19) || (!/^\d{16}$/i.test(value) && !/^\d{19}$/i.test(value)))){
                     return [false,name+':请输入正确的银行卡号'];
                 }else{
                     return [true];
@@ -242,6 +247,31 @@
                     return [false,name+':离职日期不能小于入职日期'];
                 }else if(zzzt == '1' && value > today){
                     return [false,name+':离职日期不能大于当前日期'];
+                }else{
+                    return [true];
+                }
+            }
+
+            function checkRydd(value,name){
+                var zzzt = $('#zzzt').val();
+                var ssxm_ls = $('#ssxm_ls').val();
+                if(zzzt == '1' && value != ssxm_ls){
+                    return [false,name+':人员已离职不能调动'];
+                }else{
+                    return [true];
+                }
+            }
+
+            function checkCsrq(value,name){
+                var sfzh = $('#sfzh').val().substr(6,8);
+                var csrq = !sfzh ? '' : sfzh.substr(0,4)+'-'+sfzh.substr(4,2)+'-'+sfzh.substr(6);
+                var rzrq = $('#rzrq').val();
+                var bysj = $('#bysj').val();
+                if(rzrq && csrq && csrq > rzrq){
+                    return [false,'入职日期:入职日期不能小于出生日期'];
+                }
+                else if(bysj && csrq && csrq > bysj){
+                    return [false,'毕业时间:毕业时间不能小于出生日期'];
                 }else{
                     return [true];
                 }
@@ -444,9 +474,10 @@
                 form.find('textarea[name=bz]').parent().attr('colspan',3);
 
                 form.find('select[name=xl]').val(5);
-                form.find('select[name=zzmm]').val(2);
+                form.find('select[name=zzmm]').val(3);
                 form.find('select[name=hyzk]').val(1);
                 form.find('select[name=htlb]').val(1);
+                //form.find('select[name=xb]').attr('disabled','disabled');
 
                 //enable datepicker on "lrrq" field and switches for "user_sf" field
                 form.find('input[name=rzrq]').datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});
