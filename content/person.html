@@ -113,7 +113,7 @@
                 {name:'jjlxr',index:'jjlxr', width:80, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:6,colpos:3}},
                 {name:'gx',index:'gx', width:60, editable: true,editoptions:{maxlength:"10"},editrules: {required:true},search:false,formoptions:{rowpos:6,colpos:4}},
                 {name:'jjlxrdh',index:'jjlxrdh', width:110, search:false,editable: true,editoptions:{maxlength:"20"},editrules: {required:true,number:true},formoptions:{rowpos:7,colpos:1}},
-                {name:'htlb',index:'htlb', width:80, search:false,editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同;2:劳务派遣"},formoptions:{rowpos:6,colpos:2}},
+                {name:'htlb',index:'htlb', width:80, search:true,searchoptions:{sopt:['eq'],value:"0:外包合同;1:公司合同;2:劳务派遣"},stype:'select',editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同;2:劳务派遣"},formoptions:{rowpos:6,colpos:2}},
                 {name:'bz',index:'bz', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:9,colpos:3}},
                 {name:'czsj',index:'czsj', width:150, search:false,editable: false}
             ];
@@ -152,7 +152,7 @@
                     {name:'jjlxr',index:'jjlxr', width:80, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},search:false,formoptions:{rowpos:11,colpos:1}},
                     {name:'gx',index:'gx', width:60, editable: true,editoptions:{maxlength:"10"},editrules: {required:true},search:false,formoptions:{rowpos:11,colpos:2}},
                     {name:'jjlxrdh',index:'jjlxrdh', width:110, search:false,editable: true,editoptions:{maxlength:"20"},editrules: {required:true,number:true},formoptions:{rowpos:12,colpos:1}},
-                    {name:'htlb',index:'htlb', width:80, search:false,editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同;2:劳务派遣"},formoptions:{rowpos:10,colpos:2}},
+                    {name:'htlb',index:'htlb', width:80, search:true,searchoptions:{sopt:['eq'],value:"0:外包合同;1:公司合同;2:劳务派遣"},stype:'select',editable: true,edittype:"select",editoptions:{value:"0:外包合同;1:公司合同;2:劳务派遣"},formoptions:{rowpos:10,colpos:2}},
                     {name:'bz',index:'bz', editable: true,editoptions:{maxlength:"500"},search:false,edittype:"textarea", editoptions:{rows:"2",cols:"40"},formoptions:{rowpos:16,colpos:1}},
                     {name:'czsj',index:'czsj', width:150, search:false,editable: false}
                 ];
