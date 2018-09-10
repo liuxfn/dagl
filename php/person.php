@@ -54,7 +54,7 @@ function query()
         CONCAT(' ',jjlxrdh) jjlxrdh,
         case htlb when 0 then '外包合同' when 1 then '公司合同' else '劳务派遣' end htlb,
         bz,
-        CONCAT(' ',date_format(case xgrq when null then lrrq else xgrq end,'%Y-%m-%d %H:%i:%s')) czsj
+        CONCAT(' ',date_format(xgrq,'%Y-%m-%d %H:%i:%s')) czsj
         from person
         where yxbz = 'Y'
         and zzzt = '".$zzzt."'
@@ -94,7 +94,7 @@ function query()
         jjlxrdh,
         case htlb when 0 then '外包合同' when 1 then '公司合同' else '劳务派遣' end htlb,
         bz,
-        date_format(case xgrq when null then lrrq else xgrq end,'%Y-%m-%d %H:%i:%s') czsj
+        date_format(xgrq,'%Y-%m-%d %H:%i:%s') czsj
         from person
         where yxbz = 'Y'
         and zzzt = '".$zzzt."'
@@ -107,7 +107,7 @@ function query()
 
     $rtnArray = json_decode($reslult,true);
 
-    $reslult = $GLOBALS['dbUtil']->querySql("select count(*) records,CEILING(count(*)/".$pageSize.") total from person where yxbz = 'Y' and ".$ssxm_con." and ".$queryCondition);
+    $reslult = $GLOBALS['dbUtil']->querySql("select count(*) records,CEILING(count(*)/".$pageSize.") total from person where yxbz = 'Y' and zzzt = '".$zzzt."' and ".$ssxm_con." and ".$queryCondition);
     $reslult = json_decode($reslult,true);
     $rtnArray['total'] = $reslult['rows'][0]['total'];
     $rtnArray['records'] = $reslult['rows'][0]['records'];
@@ -187,6 +187,7 @@ function personHandler()
     }else if("add" == $method)
     {
         $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";
+        $bysj = empty($_POST['bysj'])?"null":"str_to_date('".$_POST['bysj']."','%Y-%m-%d')";
         $sql = "INSERT INTO person VALUES(
           NULL,
           '".$_POST['ssxm']."',
@@ -204,7 +205,7 @@ function personHandler()
           '".$_POST['xl']."',
           '".$_POST['byyx']."',
           '".$_POST['zy']."',
-          str_to_date('".$_POST['bysj']."','%Y-%m-%d'),
+          ".$bysj.",
           '".$_POST['gzjl']."',
           '".$_POST['hyzk']."',
           '".$_POST['jtzz']."',
@@ -217,11 +218,12 @@ function personHandler()
           '".$_POST['bz']."',
           ".$_SESSION['user_id'].",
           now(),
-          null,
-          null,
+          ".$_SESSION['user_id'].",
+          now(),
           'Y')";
     }else if("edit" == $method && !isset($_GET['zzzt'])){
         $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";
+        $bysj = empty($_POST['bysj'])?"null":"str_to_date('".$_POST['bysj']."','%Y-%m-%d')";
         $sql = "UPDATE person SET
           ssxm = '".$_POST['ssxm']."',
           zw = '".$_POST['zw']."',
@@ -239,7 +241,7 @@ function personHandler()
           xl = '".$_POST['xl']."',
           byyx = '".$_POST['byyx']."',
           zy = '".$_POST['zy']."',
-          bysj = str_to_date('".$_POST['bysj']."','%Y-%m-%d'),
+          bysj = ".$bysj.",
           gzjl = '".$_POST['gzjl']."',
           hyzk = '".$_POST['hyzk']."',
           jtzz = '".$_POST['jtzz']."',
