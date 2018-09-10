@@ -30,7 +30,7 @@ function queryPersonDD()
 
     $rtnArray = json_decode($reslult,true);
 
-    $reslult = $GLOBALS['dbUtil']->querySql("select count(*) records,CEILING(count(*)/".$pageSize.") total from user where yxbz = 'Y' and ".$queryCondition);
+    $reslult = $GLOBALS['dbUtil']->querySql("select count(*) records,CEILING(count(*)/".$pageSize.") total from person_ddls where 1=1 and ".$queryCondition);
     $reslult = json_decode($reslult,true);
     $rtnArray['total'] = $reslult['rows'][0]['total'];
     $rtnArray['records'] = $reslult['rows'][0]['records'];
