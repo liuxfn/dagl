@@ -1,7 +1,7 @@
 {
-  "servername":"localhost",
-  "username":"root",
-  "password":"bmeB4000",
+  "servername":"servername",
+  "username":"username",
+  "password":"password",
   "port":3306,
-  "defaultdb":"dagl"
+  "defaultdb":"defaultdb"
 }
