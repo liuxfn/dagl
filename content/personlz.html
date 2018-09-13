@@ -35,13 +35,6 @@
 
 <!-- page specific plugin scripts -->
 <script type="text/javascript">
-    if($.cookie("user_sf") != 1){
-        var href = './index.html';
-        if(location.href.indexOf('wap') != -1){
-            href += '?type=wap';
-        }
-        location.href = href;
-    }
 
     var scripts = [
         "components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js",

@@ -188,6 +188,7 @@ function personHandler()
     {
         $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";
         $bysj = empty($_POST['bysj'])?"null":"str_to_date('".$_POST['bysj']."','%Y-%m-%d')";
+        $xb = substr($_POST['sfzh'],-2,1)%2==0?1:0;
         $sql = "INSERT INTO person VALUES(
           NULL,
           '".$_POST['ssxm']."',
@@ -199,7 +200,7 @@ function personHandler()
           '".$_POST['zzzt']."',
           '".$_POST['sfzh']."',
           '".$_POST['yhkh']."',
-          '".$_POST['xb']."',
+          '".$xb."',
           str_to_date(substring('".$_POST['sfzh']."',7,8),'%Y%m%d'),
           '".$_POST['zzmm']."',
           '".$_POST['xl']."',
@@ -224,6 +225,7 @@ function personHandler()
     }else if("edit" == $method && !isset($_GET['zzzt'])){
         $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";
         $bysj = empty($_POST['bysj'])?"null":"str_to_date('".$_POST['bysj']."','%Y-%m-%d')";
+        $xb = substr($_POST['sfzh'],-2,1)%2==0?1:0;
         $sql = "UPDATE person SET
           ssxm = '".$_POST['ssxm']."',
           zw = '".$_POST['zw']."',
@@ -234,7 +236,7 @@ function personHandler()
           zzzt = '".$_POST['zzzt']."',
           sfzh = '".$_POST['sfzh']."',
           yhkh = '".$_POST['yhkh']."',
-          xb = '".$_POST['xb']."',
+          xb = '".$xb."',
           csrq = str_to_date(substring('".$_POST['sfzh']."',7,8),'%Y%m%d'),
           zzmm = '".$_POST['zzmm']."',
           xm = '".$_POST['xm']."',

@@ -16,8 +16,11 @@ function queryPersonDD()
 {
     $pageSize=$_GET['rows'];
     $pageNo=$_GET['page'];
-    //$userId = $_SESSION['user_sf']; todo 身份校验
+    $user_sf = $_SESSION['user_sf']; //todo 身份校验
     $queryCondition = buildQueryCondition();
+    if($user_sf != 1){
+        $queryCondition = empty($queryCondition)?(" ssxm_bgq = '".$_SESSION['user_ssxm']."'"):($queryCondition ." and ssxm_bgq = '".$_SESSION['user_ssxm']."'");
+    }
     $reslult = $GLOBALS['dbUtil']->querySql("
       select user_id,
       user_name,
