@@ -1,7 +1,0 @@
-{
-  "servername":"servername",
-  "username":"username",
-  "password":"password",
-  "port":3306,
-  "defaultdb":"defaultdb"
-}
