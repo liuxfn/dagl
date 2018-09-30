@@ -54,7 +54,8 @@ function query()
         CONCAT(' ',jjlxrdh) jjlxrdh,
         case htlb when 0 then '外包合同' when 1 then '公司合同' else '劳务派遣' end htlb,
         bz,
-        CONCAT(' ',date_format(xgrq,'%Y-%m-%d %H:%i:%s')) czsj
+        CONCAT(' ',date_format(xgrq,'%Y-%m-%d %H:%i:%s')) czsj,
+        zwh
         from person
         where yxbz = 'Y'
         and zzzt = '".$zzzt."'
@@ -94,7 +95,8 @@ function query()
         jjlxrdh,
         case htlb when 0 then '外包合同' when 1 then '公司合同' else '劳务派遣' end htlb,
         bz,
-        date_format(xgrq,'%Y-%m-%d %H:%i:%s') czsj
+        date_format(xgrq,'%Y-%m-%d %H:%i:%s') czsj,
+        zwh
         from person
         where yxbz = 'Y'
         and zzzt = '".$zzzt."'
@@ -221,7 +223,8 @@ function personHandler()
           now(),
           ".$_SESSION['user_id'].",
           now(),
-          'Y')";
+          'Y',
+          '".$_POST['zwh']."')";
     }else if("edit" == $method && !isset($_GET['zzzt'])){
         $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";
         $bysj = empty($_POST['bysj'])?"null":"str_to_date('".$_POST['bysj']."','%Y-%m-%d')";
@@ -260,7 +263,8 @@ function personHandler()
           htlb = '".$_POST['htlb']."',
           bz = '".$_POST['bz']."',
           xgr = ".$_SESSION['user_id'].",
-          XGRQ=now()
+          XGRQ=now(),
+          zwh = '".$_POST['zwh']."'
           WHERE person_id = ".$_POST['person_id'];
         if(trim($_POST['ssxm']) != trim($_POST['ssxm_ls'])){
             $sql_td = "insert into person_ddls values(
