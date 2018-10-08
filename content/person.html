@@ -281,8 +281,8 @@
             }
 
             function checkDigit(value,name){
-                if(value && (value.length != 8 || (!/^\d{8}$/i.test(value)))){
-                    return [false,name+':指纹号必须是8位数字'];
+                if(value && (value.length > 8 || (!/^\d+$/i.test(value)))){
+                    return [false,name+':指纹号必须是8位以内的数字'];
                 }else{
                     return [true];
                 }
