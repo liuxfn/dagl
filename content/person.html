@@ -89,14 +89,14 @@
             var colModel = [
                 {name:'person_id',index:'person_id',width:60, editable: true,key:true,search:false,formoptions:{rowpos:1,colpos:1}},
                 {name:'ssxm_ls',index:'ssxm_ls', width:150,search:false,editable: true,hidden:true,editrules:{edithidden:true},formoptions:{rowpos:1,colpos:2}},
-                {name:'ssxm',index:'ssxm', width:150,search:search_flag,stype:'select',searchoptions:{value:ssxm,sopt:['eq'],dataInit:function(elem){$(elem).selectpicker()}},editable:true,edittype:'select',editoptions:{value:ssxm},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
+                {name:'ssxm',index:'ssxm', width:150,search:search_flag,searchoptions:{sopt:['eq','cn']},editable:true,edittype:'select',editoptions:{value:ssxm},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
                 {name:'zw',index:'zw', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:基层;1:管理层"},formoptions:{rowpos:2,colpos:2}},
                 {name:'gw',index:'gw', width:90, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:3},searchoptions:{sopt:['eq','cn']}},
                 {name:'zwh',index:'zwh', width:70, editable: true,editoptions:{maxlength:"8"},editrules:{custom:true,custom_func:checkDigit},formoptions:{rowpos:2,colpos:4},search:false},
                 {name:'xm',index:'xm', width:70, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:3,colpos:1},searchoptions:{sopt:['eq','cn']}},
                 {name:'rzrq',index:'rzrq', width:90, editable: true,editrules: {required:true,custom:true,custom_func:checkCsrq},formoptions:{rowpos:3,colpos:2},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
                 {name:'lzrq',index:'lzrq', width:90, editable: true,formoptions:{rowpos:3,colpos:4},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}},editrules: {custom:true,custom_func:checkZzzt}},
-                {name:'zzzt',index:'zzzt', width:80, editable: true,search:true,edittype:"select",editoptions:{value:"0:在职;1:离职"},formoptions:{rowpos:3,colpos:3},searchoptions:{sopt:['eq'],value:"0:在职;1:离职;"},stype:'select'},
+                {name:'zzzt',index:'zzzt', width:80, editable: true,search:true,edittype:"select",editoptions:{value:"0:在职;1:离职"},formoptions:{rowpos:3,colpos:3},searchoptions:{sopt:['eq'],value:"0:在职;1:离职"},stype:'select'},
                 {name:'gl',index:'gl', width:60, editable: false,search:false},
                 {name:'sfzh',index:'sfzh', editable: true,editoptions:{maxlength:"18"},editrules: {required:true,custom:true,custom_func:checkUserCardId},formoptions:{rowpos:4,colpos:1},searchoptions:{sopt:['eq','cn']}},
                 {name:'yhkh',index:'yhkh', editable: true,editoptions:{maxlength:"19"},editrules: {custom:true,custom_func:checkBankCardId},formoptions:{rowpos:4,colpos:2},searchoptions:{sopt:['eq','cn']}},
@@ -129,7 +129,7 @@
                 colModel = [
                     {name:'person_id',index:'person_id',width:60, editable: true,key:true,search:false,formoptions:{rowpos:1,colpos:1}},
                     {name:'ssxm_ls',index:'ssxm_ls', width:150,search:false,hidden:true,editrules:{edithidden:true},formoptions:{rowpos:1,colpos:2}},
-                    {name:'ssxm',index:'ssxm', width:150,search:search_flag,searchoptions:{value:ssxm,sopt:['eq']},editable:true,edittype:"select",editoptions:{value:ssxm},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
+                    {name:'ssxm',index:'ssxm', width:150,search:search_flag,searchoptions:{sopt:['eq','cn']},editable:true,edittype:"select",editoptions:{value:ssxm},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
                     {name:'zw',index:'zw', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:基层;1:管理层"},formoptions:{rowpos:2,colpos:2}},
                     {name:'gw',index:'gw', width:90, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:3,colpos:1},searchoptions:{sopt:['eq','cn']}},
                     {name:'zwh',index:'zwh', width:70, editable: true,editoptions:{maxlength:"8"},editrules:{custom:true,custom_func:checkDigit},formoptions:{rowpos:3,colpos:2},search:false},
@@ -385,6 +385,7 @@
                         //search form
                         closeAfterSearch:true,
                         recreateForm: true,
+                        //height:300,
                         afterShowSearch: function(e){
                             var form = $(e[0]);
                             form.closest('.ui-jqdialog').find('.ui-jqdialog-title').wrap('<div class="widget-header" />')
