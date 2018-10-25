@@ -171,12 +171,13 @@ function updatePerson($sql)
 
 function init()
 {
-    $sql = "SELECT SSXM FROM DM_SSXM WHERE YXBZ = 'Y'";
+    //表名区分大小写
+    $sql = "SELECT ssxm FROM dm_ssxm WHERE YXBZ = 'Y'";
     $reslult = $GLOBALS['dbUtil']->querySql($sql);
     $rtnArray = json_decode($reslult,true);
     $select = "";
     foreach ($rtnArray['rows'] as $x) {
-        $select .= $x['SSXM'].":".$x['SSXM'].";";
+        $select .= $x['ssxm'].":".$x['ssxm'].";";
     }
     return $select;
 }
