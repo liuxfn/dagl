@@ -169,6 +169,19 @@ function updatePerson($sql)
     }
 }
 
+function querySsxm()
+{
+    $sql = "SELECT SSXM FROM DM_SSXM WHERE YXBZ = 'Y'";
+    $reslult = $GLOBALS['dbUtil']->querySql($sql);
+    $rtnArray = json_decode($reslult,true);
+    $select = "<select class='selectpicker' data-live-search='true'>";
+    foreach ($rtnArray['rows'] as $x) {
+        $select = $select . "<option value='".$x['SSXM']."'>".$x['SSXM']."</option>";
+    }
+    $select = $select . "</select>";
+    return $select;
+}
+
 //信息助手
 function personHandler()
 {
@@ -186,6 +199,9 @@ function personHandler()
     if("query" == $method)
     {
         return query();
+    }else if("querySsxm" == $method)
+    {
+        return querySsxm();
     }else if("add" == $method)
     {
         $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";
