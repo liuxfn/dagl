@@ -169,16 +169,15 @@ function updatePerson($sql)
     }
 }
 
-function querySsxm()
+function init()
 {
     $sql = "SELECT SSXM FROM DM_SSXM WHERE YXBZ = 'Y'";
     $reslult = $GLOBALS['dbUtil']->querySql($sql);
     $rtnArray = json_decode($reslult,true);
-    $select = "<select class='selectpicker' data-live-search='true'>";
+    $select = "";
     foreach ($rtnArray['rows'] as $x) {
-        $select = $select . "<option value='".$x['SSXM']."'>".$x['SSXM']."</option>";
+        $select .= $x['SSXM'].":".$x['SSXM'].";";
     }
-    $select = $select . "</select>";
     return $select;
 }
 
@@ -199,9 +198,9 @@ function personHandler()
     if("query" == $method)
     {
         return query();
-    }else if("querySsxm" == $method)
+    }else if("init" == $method)
     {
-        return querySsxm();
+        return init();
     }else if("add" == $method)
     {
         $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";

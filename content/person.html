@@ -44,9 +44,13 @@
         "components/jqGrid/js/addons/jszip.js"
     ]
     $('.page-content-area').ace_ajax('loadScripts', scripts, function() {
-        //inline scripts related to this page
+        var ssxm = '';
+        $.get("php/person.php?oper=init", function(data){
+            ssxm = data.substring(0,data.length-1);
 
+        //inline scripts related to this page
         jQuery(function($) {
+
             var grid_selector = "#grid-table";
             var pager_selector = "#grid-pager";
 
@@ -81,19 +85,18 @@
 		  }
 		})
              */
-
             var search_flag = $.cookie("user_sf") == 1 ? true : false;
             var colModel = [
                 {name:'person_id',index:'person_id',width:60, editable: true,key:true,search:false,formoptions:{rowpos:1,colpos:1}},
                 {name:'ssxm_ls',index:'ssxm_ls', width:150,search:false,editable: true,hidden:true,editrules:{edithidden:true},formoptions:{rowpos:1,colpos:2}},
-                {name:'ssxm',index:'ssxm', width:150,search:search_flag,stype:'select',searchoptions:{dataUrl:'php/person.php?oper=querySsxm',sopt:['eq']},editable:true,edittype:'select',editoptions:{dataUrl:"php/person.php?oper=querySsxm"},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
+                {name:'ssxm',index:'ssxm', width:150,search:search_flag,stype:'select',searchoptions:{value:ssxm,sopt:['eq'],dataInit:function(elem){$(elem).selectpicker()}},editable:true,edittype:'select',editoptions:{value:ssxm},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
                 {name:'zw',index:'zw', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:基层;1:管理层"},formoptions:{rowpos:2,colpos:2}},
                 {name:'gw',index:'gw', width:90, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:2,colpos:3},searchoptions:{sopt:['eq','cn']}},
                 {name:'zwh',index:'zwh', width:70, editable: true,editoptions:{maxlength:"8"},editrules:{custom:true,custom_func:checkDigit},formoptions:{rowpos:2,colpos:4},search:false},
                 {name:'xm',index:'xm', width:70, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:3,colpos:1},searchoptions:{sopt:['eq','cn']}},
                 {name:'rzrq',index:'rzrq', width:90, editable: true,editrules: {required:true,custom:true,custom_func:checkCsrq},formoptions:{rowpos:3,colpos:2},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}}},
                 {name:'lzrq',index:'lzrq', width:90, editable: true,formoptions:{rowpos:3,colpos:4},searchoptions:{sopt:['eq','lt','le','gt','ge'],dataInit:function(elem){$(elem).datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});}},editrules: {custom:true,custom_func:checkZzzt}},
-                {name:'zzzt',index:'zzzt', width:80, editable: true,search:true,edittype:"select",editoptions:{value:"0:在职;1:离职"},formoptions:{rowpos:3,colpos:3},searchoptions:{sopt:['eq'],value:"0:在职;1:离职"},stype:'select'},
+                {name:'zzzt',index:'zzzt', width:80, editable: true,search:true,edittype:"select",editoptions:{value:"0:在职;1:离职"},formoptions:{rowpos:3,colpos:3},searchoptions:{sopt:['eq'],value:"0:在职;1:离职;"},stype:'select'},
                 {name:'gl',index:'gl', width:60, editable: false,search:false},
                 {name:'sfzh',index:'sfzh', editable: true,editoptions:{maxlength:"18"},editrules: {required:true,custom:true,custom_func:checkUserCardId},formoptions:{rowpos:4,colpos:1},searchoptions:{sopt:['eq','cn']}},
                 {name:'yhkh',index:'yhkh', editable: true,editoptions:{maxlength:"19"},editrules: {custom:true,custom_func:checkBankCardId},formoptions:{rowpos:4,colpos:2},searchoptions:{sopt:['eq','cn']}},
@@ -126,7 +129,7 @@
                 colModel = [
                     {name:'person_id',index:'person_id',width:60, editable: true,key:true,search:false,formoptions:{rowpos:1,colpos:1}},
                     {name:'ssxm_ls',index:'ssxm_ls', width:150,search:false,hidden:true,editrules:{edithidden:true},formoptions:{rowpos:1,colpos:2}},
-                    {name:'ssxm',index:'ssxm', width:150,search:search_flag,searchoptions:{sopt:['eq','cn']},editable:true,editoptions:{maxlength:"30"},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
+                    {name:'ssxm',index:'ssxm', width:150,search:search_flag,searchoptions:{value:ssxm,sopt:['eq']},editable:true,edittype:"select",editoptions:{value:ssxm},editrules: {required:true,custom:true,custom_func:checkRydd},formoptions:{rowpos:2,colpos:1}},
                     {name:'zw',index:'zw', width:70, editable: true,search:false,edittype:"select",editoptions:{value:"0:基层;1:管理层"},formoptions:{rowpos:2,colpos:2}},
                     {name:'gw',index:'gw', width:90, editable: true,editoptions:{maxlength:"30"},editrules: {required:true},formoptions:{rowpos:3,colpos:1},searchoptions:{sopt:['eq','cn']}},
                     {name:'zwh',index:'zwh', width:70, editable: true,editoptions:{maxlength:"8"},editrules:{custom:true,custom_func:checkDigit},formoptions:{rowpos:3,colpos:2},search:false},
@@ -189,7 +192,9 @@
                             href += '?type=wap';
                         }
                         location.href = href;
+                        return;
                     }
+
                     var table = this;
                     setTimeout(function(){
                         styleCheckbox(table);
@@ -287,7 +292,6 @@
                     return [true];
                 }
             }
-
 
 
             //enable search/filter toolbar
@@ -497,6 +501,14 @@
                 form.find('input[name=lzrq]').datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});
                 form.find('input[name=bysj]').datepicker({format:'yyyy-mm-dd' , autoclose:true,"language":"zh-CN"});
 
+                form.find('select[name=ssxm]').selectpicker({
+                    'liveSearch':true,
+                    'width':'150px',
+                    'showTick':true,
+                    'size':10,
+                    'style':'btn-white'});
+                //form.find('select[name=ssxm]').css({'width':'150px','max-width':'100%','height':'35px'});
+
                 //form.find('input[name=user_sf]').addClass('ace ace-switch ace-switch-5').after('<span class="lbl"></span>');
                 //don't wrap inside a label element, the checkbox value won't be submitted (POST'ed)
                 //.addClass('ace ace-switch ace-switch-5').wrap('<label class="inline" />').after('<span class="lbl"></span>');
@@ -621,6 +633,7 @@
                 $.jgrid.gridDestroy(grid_selector);
                 $('.ui-jqdialog').remove();
             });
+        });
         });
     });
 </script>
