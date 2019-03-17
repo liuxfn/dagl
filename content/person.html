@@ -235,7 +235,7 @@
              *校验身份证号
              */
             function checkBankCardId(value,name){
-                if(value && ((value.length != 16 && value.length != 19) || (!/^\d{16}$/i.test(value) && !/^\d{19}$/i.test(value)))){
+                if(value && (!/^\d{16,19}$/i.test(value))){
                     return [false,name+':请输入正确的银行卡号'];
                 }else{
                     return [true];
