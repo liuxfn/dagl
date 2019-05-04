@@ -505,7 +505,7 @@
                     'size':10,
                     'style':'btn-white'});
 
-                if($.cookie("user_sf") != 1){
+                if($.cookie("user_sf") != 1 && $.cookie("user_ssxm") != '售楼部'){
                     form.find('select[name=ssxm]').selectpicker('val', $.cookie("user_ssxm"));
                     if(arguments.length == 1){
                         form.find('select[name=ssxm]').prop('disabled', true);

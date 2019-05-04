@@ -14,14 +14,14 @@ $dbUtil = new DBUtil();
 //用户消息查询
 function query()
 {
-    $pageSize=$_GET['rows'];
-    $pageNo=$_GET['page'];
-    $ssxm_con =$_SESSION["user_sf"]==1?"1=1":"ssxm='".$_SESSION["user_ssxm"]."'";
+    $pageSize = $_GET['rows'];
+    $pageNo = $_GET['page'];
+    $ssxm_con = $_SESSION["user_sf"] == 1 ? "1=1" : ($_SESSION["user_ssxm"] == '售楼部' ? " ssxm like '%售楼部%'" : "ssxm='" . $_SESSION["user_ssxm"] . "'");
     //$userId = $_SESSION['user_sf']; todo 身份校验
     $queryCondition = buildQueryCondition();
     $sql = "";
-    $zzzt = isset($_GET['zzzt'])?1:0;
-    if(isset($_GET['type'])){
+    $zzzt = isset($_GET['zzzt']) ? 1 : 0;
+    if (isset($_GET['type'])) {
         $sql = "select
         CONCAT(' ',person_id) person_id,
         ssxm,
@@ -58,11 +58,11 @@ function query()
         zwh
         from person
         where yxbz = 'Y'
-        and zzzt = '".$zzzt."'
-        and ".$ssxm_con."
-        and ".$queryCondition."
-        limit ".(($pageNo-1)*$pageSize).",".$pageSize;
-    }else{
+        and zzzt = '" . $zzzt . "'
+        and " . $ssxm_con . "
+        and " . $queryCondition . "
+        limit " . (($pageNo - 1) * $pageSize) . "," . $pageSize;
+    } else {
         $sql = "select
         person_id,
         ssxm,
@@ -99,57 +99,55 @@ function query()
         zwh
         from person
         where yxbz = 'Y'
-        and zzzt = '".$zzzt."'
-        and ".$ssxm_con."
-        and ".$queryCondition."
-        limit ".(($pageNo-1)*$pageSize).",".$pageSize;
+        and zzzt = '" . $zzzt . "'
+        and " . $ssxm_con . "
+        and " . $queryCondition . "
+        limit " . (($pageNo - 1) * $pageSize) . "," . $pageSize;
     }
 
     $reslult = $GLOBALS['dbUtil']->querySql($sql);
 
-    $rtnArray = json_decode($reslult,true);
+    $rtnArray = json_decode($reslult, true);
 
-    $reslult = $GLOBALS['dbUtil']->querySql("select count(*) records,CEILING(count(*)/".$pageSize.") total from person where yxbz = 'Y' and zzzt = '".$zzzt."' and ".$ssxm_con." and ".$queryCondition);
-    $reslult = json_decode($reslult,true);
+    $reslult = $GLOBALS['dbUtil']->querySql("select count(*) records,CEILING(count(*)/" . $pageSize . ") total from person where yxbz = 'Y' and zzzt = '" . $zzzt . "' and " . $ssxm_con . " and " . $queryCondition);
+    $reslult = json_decode($reslult, true);
     $rtnArray['total'] = $reslult['rows'][0]['total'];
     $rtnArray['records'] = $reslult['rows'][0]['records'];
     $rtnArray['page'] = $pageNo;
 
-    $rtnStr= json_encode($rtnArray,true);
+    $rtnStr = json_encode($rtnArray, true);
     return $rtnStr;
 }
 
 function buildQueryCondition()
 {
     $queryCondition = "1=1";
-    if((!isset($_GET['type']) && (!isset($_GET['filters']) || empty($_GET['filters']))) || (isset($_GET['type']) && (!isset($_SESSION["person_filters"]) || empty($_SESSION["person_filters"]))))
-    {
+    if ((!isset($_GET['type']) && (!isset($_GET['filters']) || empty($_GET['filters']))) || (isset($_GET['type']) && (!isset($_SESSION["person_filters"]) || empty($_SESSION["person_filters"])))) {
         unset($_SESSION["person_filters"]);
         return $queryCondition;
     }
 
-    $filters=null;
-    if(isset($_GET['filters'])){
+    $filters = null;
+    if (isset($_GET['filters'])) {
 
-        $filters = json_decode($_GET['filters'],true);
+        $filters = json_decode($_GET['filters'], true);
         $_SESSION["person_filters"] = $_GET['filters'];
-    }else{
-        $filters = json_decode($_SESSION["person_filters"],true);
+    } else {
+        $filters = json_decode($_SESSION["person_filters"], true);
     }
 
     $groupOp = $filters['groupOp'];
     $rules = $filters['rules'];
     $operator = "";
-    for ($x=0; $x<count($rules);$x++) {
-        $queryCondition.=" ".$groupOp." ";
+    for ($x = 0; $x < count($rules); $x++) {
+        $queryCondition .= " " . $groupOp . " ";
         $operator = $rules[$x]['op'] == "in" ? "in" : ($rules[$x]['op'] == "ni" ? "not in" : ($rules[$x]['op'] == "eq" ? "=" : ($rules[$x]['op'] == "cn" ? "like" : ($rules[$x]['op'] == "lt" ? "<" : ($rules[$x]['op'] == "le" ? "<=" : ($rules[$x]['op'] == "gt" ? ">" : ">="))))));
-        if($operator == 'in' || $operator == 'ni')
-        {
-            $queryCondition.=$rules[$x]['field']." ".$operator." (".addslashes($rules[$x]['data']).") ";
-        }else if($operator == 'like'){
-            $queryCondition.=$rules[$x]['field']." ".$operator." '%".addslashes($rules[$x]['data'])."%' ";
-        }else{
-            $queryCondition.=$rules[$x]['field']." ".$operator." '".addslashes($rules[$x]['data'])."' ";
+        if ($operator == 'in' || $operator == 'ni') {
+            $queryCondition .= $rules[$x]['field'] . " " . $operator . " (" . addslashes($rules[$x]['data']) . ") ";
+        } else if ($operator == 'like') {
+            $queryCondition .= $rules[$x]['field'] . " " . $operator . " '%" . addslashes($rules[$x]['data']) . "%' ";
+        } else {
+            $queryCondition .= $rules[$x]['field'] . " " . $operator . " '" . addslashes($rules[$x]['data']) . "' ";
         }
     }
     return $queryCondition;
@@ -159,12 +157,9 @@ function buildQueryCondition()
 function updatePerson($sql)
 {
     $reslult = $GLOBALS['dbUtil']->updateSql($sql);
-    if($reslult == -1)
-    {
+    if ($reslult == -1) {
         return "{\"code\":\"400\",\"message\":\"\"}";
-    }
-    else
-    {
+    } else {
         return "{\"code\":\"200\",\"message\":\"\"}";
     }
 }
@@ -173,11 +168,15 @@ function init()
 {
     //表名区分大小写
     $sql = "SELECT ssxm FROM dm_ssxm WHERE YXBZ = 'Y'";
+    if ($_SESSION["user_ssxm"] == '售楼部') {
+        $sql .= " and ssxm like '%售楼部%'";
+    }
+
     $reslult = $GLOBALS['dbUtil']->querySql($sql);
-    $rtnArray = json_decode($reslult,true);
+    $rtnArray = json_decode($reslult, true);
     $select = "";
     foreach ($rtnArray['rows'] as $x) {
-        $select .= $x['ssxm'].":".$x['ssxm'].";";
+        $select .= $x['ssxm'] . ":" . $x['ssxm'] . ";";
     }
     return $select;
 }
@@ -186,121 +185,117 @@ function init()
 function personHandler()
 {
     session_start();
-    if(!isset($_SESSION["authorization"]) || $_SESSION["authorization"] == '' || $_SESSION["authorization"] != $_COOKIE["authorization"]){
+    if (!isset($_SESSION["authorization"]) || $_SESSION["authorization"] == '' || $_SESSION["authorization"] != $_COOKIE["authorization"]) {
         return "{\"code\":\"402\",\"message\":\"请重新登陆\"}";
     }
 
-    $method = !isset($_GET['oper'])?$_POST['oper']:$_GET['oper'];
-    if(empty($method))
-    {
+    $method = !isset($_GET['oper']) ? $_POST['oper'] : $_GET['oper'];
+    if (empty($method)) {
         return "{\"code\":\"401\"}";
     }
 
-    if("query" == $method)
-    {
+    if ("query" == $method) {
         return query();
-    }else if("init" == $method)
-    {
+    } else if ("init" == $method) {
         return init();
-    }else if("add" == $method)
-    {
-        $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";
-        $bysj = empty($_POST['bysj'])?"null":"str_to_date('".$_POST['bysj']."','%Y-%m-%d')";
-        $xb = substr($_POST['sfzh'],-2,1)%2==0?1:0;
+    } else if ("add" == $method) {
+        $lzrq = empty($_POST['lzrq']) ? "null" : "str_to_date('" . $_POST['lzrq'] . "','%Y-%m-%d')";
+        $bysj = empty($_POST['bysj']) ? "null" : "str_to_date('" . $_POST['bysj'] . "','%Y-%m-%d')";
+        $xb = substr($_POST['sfzh'], -2, 1) % 2 == 0 ? 1 : 0;
         $sql = "INSERT INTO person VALUES(
           NULL,
-          '".$_POST['ssxm']."',
-          '".$_POST['zw']."',
-          '".$_POST['gw']."',
-          '".$_POST['xm']."',
-          str_to_date('".$_POST['rzrq']."','%Y-%m-%d'),
-          ".$lzrq.",
-          '".$_POST['zzzt']."',
-          '".$_POST['sfzh']."',
-          '".$_POST['yhkh']."',
-          '".$xb."',
-          str_to_date(substring('".$_POST['sfzh']."',7,8),'%Y%m%d'),
-          '".$_POST['zzmm']."',
-          '".$_POST['xl']."',
-          '".$_POST['byyx']."',
-          '".$_POST['zy']."',
-          ".$bysj.",
-          '".$_POST['gzjl']."',
-          '".$_POST['hyzk']."',
-          '".$_POST['jtzz']."',
-          '".$_POST['xzz']."',
-          '".$_POST['lxdh']."',
-          '".$_POST['jjlxr']."',
-          '".$_POST['gx']."',
-          '".$_POST['jjlxrdh']."',
-          '".$_POST['htlb']."',
-          '".$_POST['bz']."',
-          ".$_SESSION['user_id'].",
+          '" . $_POST['ssxm'] . "',
+          '" . $_POST['zw'] . "',
+          '" . $_POST['gw'] . "',
+          '" . $_POST['xm'] . "',
+          str_to_date('" . $_POST['rzrq'] . "','%Y-%m-%d'),
+          " . $lzrq . ",
+          '" . $_POST['zzzt'] . "',
+          '" . $_POST['sfzh'] . "',
+          '" . $_POST['yhkh'] . "',
+          '" . $xb . "',
+          str_to_date(substring('" . $_POST['sfzh'] . "',7,8),'%Y%m%d'),
+          '" . $_POST['zzmm'] . "',
+          '" . $_POST['xl'] . "',
+          '" . $_POST['byyx'] . "',
+          '" . $_POST['zy'] . "',
+          " . $bysj . ",
+          '" . $_POST['gzjl'] . "',
+          '" . $_POST['hyzk'] . "',
+          '" . $_POST['jtzz'] . "',
+          '" . $_POST['xzz'] . "',
+          '" . $_POST['lxdh'] . "',
+          '" . $_POST['jjlxr'] . "',
+          '" . $_POST['gx'] . "',
+          '" . $_POST['jjlxrdh'] . "',
+          '" . $_POST['htlb'] . "',
+          '" . $_POST['bz'] . "',
+          " . $_SESSION['user_id'] . ",
           now(),
-          ".$_SESSION['user_id'].",
+          " . $_SESSION['user_id'] . ",
           now(),
           'Y',
-          '".$_POST['zwh']."')";
-    }else if("edit" == $method && !isset($_GET['zzzt'])){
-        $lzrq = empty($_POST['lzrq'])?"null":"str_to_date('".$_POST['lzrq']."','%Y-%m-%d')";
-        $bysj = empty($_POST['bysj'])?"null":"str_to_date('".$_POST['bysj']."','%Y-%m-%d')";
-        $xb = substr($_POST['sfzh'],-2,1)%2==0?1:0;
+          '" . $_POST['zwh'] . "')";
+    } else if ("edit" == $method && !isset($_GET['zzzt'])) {
+        $lzrq = empty($_POST['lzrq']) ? "null" : "str_to_date('" . $_POST['lzrq'] . "','%Y-%m-%d')";
+        $bysj = empty($_POST['bysj']) ? "null" : "str_to_date('" . $_POST['bysj'] . "','%Y-%m-%d')";
+        $xb = substr($_POST['sfzh'], -2, 1) % 2 == 0 ? 1 : 0;
         $sql = "UPDATE person SET
-          ssxm = '".$_POST['ssxm']."',
-          zw = '".$_POST['zw']."',
-          gw = '".$_POST['gw']."',
-          xm = '".$_POST['xm']."',
-          rzrq = str_to_date('".$_POST['rzrq']."','%Y-%m-%d'),
-          lzrq = ".$lzrq.",
-          zzzt = '".$_POST['zzzt']."',
-          sfzh = '".$_POST['sfzh']."',
-          yhkh = '".$_POST['yhkh']."',
-          xb = '".$xb."',
-          csrq = str_to_date(substring('".$_POST['sfzh']."',7,8),'%Y%m%d'),
-          zzmm = '".$_POST['zzmm']."',
-          xm = '".$_POST['xm']."',
-          xl = '".$_POST['xl']."',
-          byyx = '".$_POST['byyx']."',
-          zy = '".$_POST['zy']."',
-          bysj = ".$bysj.",
-          gzjl = '".$_POST['gzjl']."',
-          hyzk = '".$_POST['hyzk']."',
-          jtzz = '".$_POST['jtzz']."',
-          xzz = '".$_POST['xzz']."',
-          xm = '".$_POST['xm']."',
-          gzjl = '".$_POST['gzjl']."',
-          hyzk = '".$_POST['hyzk']."',
-          jtzz = '".$_POST['jtzz']."',
-          xzz = '".$_POST['xzz']."',
-          lxdh = '".$_POST['lxdh']."',
-          jjlxr = '".$_POST['jjlxr']."',
-          gx = '".$_POST['gx']."',
-          jjlxrdh = '".$_POST['jjlxrdh']."',
-          htlb = '".$_POST['htlb']."',
-          bz = '".$_POST['bz']."',
-          xgr = ".$_SESSION['user_id'].",
+          ssxm = '" . $_POST['ssxm'] . "',
+          zw = '" . $_POST['zw'] . "',
+          gw = '" . $_POST['gw'] . "',
+          xm = '" . $_POST['xm'] . "',
+          rzrq = str_to_date('" . $_POST['rzrq'] . "','%Y-%m-%d'),
+          lzrq = " . $lzrq . ",
+          zzzt = '" . $_POST['zzzt'] . "',
+          sfzh = '" . $_POST['sfzh'] . "',
+          yhkh = '" . $_POST['yhkh'] . "',
+          xb = '" . $xb . "',
+          csrq = str_to_date(substring('" . $_POST['sfzh'] . "',7,8),'%Y%m%d'),
+          zzmm = '" . $_POST['zzmm'] . "',
+          xm = '" . $_POST['xm'] . "',
+          xl = '" . $_POST['xl'] . "',
+          byyx = '" . $_POST['byyx'] . "',
+          zy = '" . $_POST['zy'] . "',
+          bysj = " . $bysj . ",
+          gzjl = '" . $_POST['gzjl'] . "',
+          hyzk = '" . $_POST['hyzk'] . "',
+          jtzz = '" . $_POST['jtzz'] . "',
+          xzz = '" . $_POST['xzz'] . "',
+          xm = '" . $_POST['xm'] . "',
+          gzjl = '" . $_POST['gzjl'] . "',
+          hyzk = '" . $_POST['hyzk'] . "',
+          jtzz = '" . $_POST['jtzz'] . "',
+          xzz = '" . $_POST['xzz'] . "',
+          lxdh = '" . $_POST['lxdh'] . "',
+          jjlxr = '" . $_POST['jjlxr'] . "',
+          gx = '" . $_POST['gx'] . "',
+          jjlxrdh = '" . $_POST['jjlxrdh'] . "',
+          htlb = '" . $_POST['htlb'] . "',
+          bz = '" . $_POST['bz'] . "',
+          xgr = " . $_SESSION['user_id'] . ",
           XGRQ=now(),
-          zwh = '".$_POST['zwh']."'
-          WHERE person_id = ".$_POST['person_id'];
-        if(trim($_POST['ssxm']) != trim($_POST['ssxm_ls'])){
+          zwh = '" . $_POST['zwh'] . "'
+          WHERE person_id = " . $_POST['person_id'];
+        if (trim($_POST['ssxm']) != trim($_POST['ssxm_ls'])) {
             $sql_td = "insert into person_ddls values(
-            ".$_SESSION['user_id'].",
-            '".$_SESSION['user_name']."',
-            ".$_POST['person_id'].",
-            '".$_POST['xm']."',
-            '".$_POST['ssxm_ls']."',
-            '".$_POST['ssxm']."',now())";
+            " . $_SESSION['user_id'] . ",
+            '" . $_SESSION['user_name'] . "',
+            " . $_POST['person_id'] . ",
+            '" . $_POST['xm'] . "',
+            '" . $_POST['ssxm_ls'] . "',
+            '" . $_POST['ssxm'] . "',now())";
             updatePerson($sql_td);
         }
-    }else if("edit" == $method && isset($_GET['zzzt'])){
+    } else if ("edit" == $method && isset($_GET['zzzt'])) {
         $sql = "UPDATE person SET
-          zzzt = '".$_POST['zzzt']."',
+          zzzt = '" . $_POST['zzzt'] . "',
           lzrq = null,
-          xgr = ".$_SESSION['user_id'].",
+          xgr = " . $_SESSION['user_id'] . ",
           XGRQ=now()
-          WHERE person_id = ".$_POST['person_id'];
-    }else if("del" == $method){
-        $sql = "UPDATE person SET YXBZ = 'N',XGRQ=now(),XGR=".$_SESSION['user_id']." WHERE person_id in (".$_POST['id'].")";
+          WHERE person_id = " . $_POST['person_id'];
+    } else if ("del" == $method) {
+        $sql = "UPDATE person SET YXBZ = 'N',XGRQ=now(),XGR=" . $_SESSION['user_id'] . " WHERE person_id in (" . $_POST['id'] . ")";
     }
     return updatePerson($sql);
 }

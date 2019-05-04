@@ -19,7 +19,12 @@ function queryPersonDD()
     $user_sf = $_SESSION['user_sf']; //todo 身份校验
     $queryCondition = buildQueryCondition();
     if($user_sf != 1){
-        $queryCondition = empty($queryCondition)?(" ssxm_bgq = '".$_SESSION['user_ssxm']."'"):($queryCondition ." and ssxm_bgq = '".$_SESSION['user_ssxm']."'");
+        if($_SESSION['user_ssxm'] == '售楼部'){
+            $queryCondition = empty($queryCondition)?(" ssxm_bgq like '%售楼部%'"):($queryCondition ." and ssxm_bgq like '%售楼部%'");
+        }else{
+            $queryCondition = empty($queryCondition)?(" ssxm_bgq = '".$_SESSION['user_ssxm']."'"):($queryCondition ." and ssxm_bgq = '".$_SESSION['user_ssxm']."'");
+        }
+
     }
     $reslult = $GLOBALS['dbUtil']->querySql("
       select user_id,
